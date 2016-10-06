@@ -11,7 +11,7 @@ import UIKit
 class CustomTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        let MessageNavController = UINavigationController(rootViewController: ViewController())
+        let MessageNavController = UINavigationController(rootViewController: MessagesController())
 //        let contactsBtn = UITabBarItem(tabBarSystemItem: .Contacts, tag: 0)
         MessageNavController.tabBarItem.title = "Message"
 //      MessageNavController.tabBarItem.image = UIImage(named: .)
