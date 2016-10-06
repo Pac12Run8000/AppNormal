@@ -13,6 +13,7 @@
 		094FC8E21DA532940079EB96 /* HowToRulesTermsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094FC8E11DA532940079EB96 /* HowToRulesTermsViewController.swift */; };
 		0955D6461DA6ABCE009CACAA /* NewMessageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0955D6451DA6ABCE009CACAA /* NewMessageController.swift */; };
 		0955D6491DA6C87D009CACAA /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0955D6481DA6C87D009CACAA /* User.swift */; };
+		0955D64B1DA6D462009CACAA /* LoginController+handlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0955D64A1DA6D462009CACAA /* LoginController+handlers.swift */; };
 		09819C001DA55D6C0025A1AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 09819BFF1DA55D6C0025A1AF /* GoogleService-Info.plist */; };
 		0985C3951DA44D7000998B63 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0985C3941DA44D7000998B63 /* AppDelegate.swift */; };
 		0985C3971DA44D7000998B63 /* MessagesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0985C3961DA44D7000998B63 /* MessagesController.swift */; };
@@ -29,6 +30,7 @@
 		094FC8E11DA532940079EB96 /* HowToRulesTermsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HowToRulesTermsViewController.swift; sourceTree = "<group>"; };
 		0955D6451DA6ABCE009CACAA /* NewMessageController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewMessageController.swift; sourceTree = "<group>"; };
 		0955D6481DA6C87D009CACAA /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		0955D64A1DA6D462009CACAA /* LoginController+handlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LoginController+handlers.swift"; sourceTree = "<group>"; };
 		09819BFF1DA55D6C0025A1AF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0985C3911DA44D7000998B63 /* AppNormal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppNormal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0985C3941DA44D7000998B63 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -63,6 +65,7 @@
 				094FC8DF1DA4B9B50079EB96 /* LoginController.swift */,
 				094FC8E11DA532940079EB96 /* HowToRulesTermsViewController.swift */,
 				0955D6451DA6ABCE009CACAA /* NewMessageController.swift */,
+				0955D64A1DA6D462009CACAA /* LoginController+handlers.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -250,6 +253,7 @@
 			files = (
 				0985C3971DA44D7000998B63 /* MessagesController.swift in Sources */,
 				0985C3951DA44D7000998B63 /* AppDelegate.swift in Sources */,
+				0955D64B1DA6D462009CACAA /* LoginController+handlers.swift in Sources */,
 				094FC8DD1DA4AC370079EB96 /* FeedViewController.swift in Sources */,
 				094FC8DB1DA4A5290079EB96 /* CustomTabBarController.swift in Sources */,
 				0955D6491DA6C87D009CACAA /* User.swift in Sources */,

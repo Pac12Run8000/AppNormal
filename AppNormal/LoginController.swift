@@ -74,11 +74,13 @@ class LoginController: UIViewController {
         return textField
     }()
     
-    let profileImage:UIImageView = {
+    lazy var profileImage:UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "default")
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .ScaleAspectFill
+        imageView.userInteractionEnabled = true
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleSelectProfileImageView)))
         return imageView
     }()
     
@@ -100,6 +102,8 @@ class LoginController: UIViewController {
         label.textAlignment = .Center
         return label
     }()
+    
+    
     
     func handleLogin() {
         guard let email = emailTextField.text, password = passwordTextField.text else {
@@ -143,35 +147,7 @@ class LoginController: UIViewController {
         passwordTextFieldHeightAnchor?.active = true
     }
     
-    func handleRegister() {
-        guard let email = emailTextField.text, password = passwordTextField.text, name = nameTextField.text else {
-            return
-        }
-        
-        FIRAuth.auth()?.createUserWithEmail(email, password: password, completion: { (user: FIRUser?, error) in
-            if (error != nil) {
-                print(error)
-                return
-            }
-            
-            guard let uid = user?.uid else {
-                return
-            }
-            
-            let ref = FIRDatabase.database().referenceFromURL("https://appnormal-e8c55.firebaseio.com/")
-            let usersReference = ref.child("users").child(uid)
-            let values = ["name": name, "email": email]
-            usersReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
-                if (err != nil) {
-                    print(err)
-                    return
-                }
-                self.dismissViewControllerAnimated(true, completion: nil)
-                print("Saved successfully")
-            })
-
-        })
-    }
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
