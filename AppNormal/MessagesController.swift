@@ -23,10 +23,44 @@ class MessagesController: UITableViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Compose, target: self, action: #selector(handleNewMessage))
         navigationItem.rightBarButtonItem?.tintColor = UIColor(red: 0.05, green: 0.00, blue: 0.00, alpha: 1.0)
         checkIfUserIsLoggedIn()
+        
+        observemessages()
+    }
+    
+    var messages = [Message]()
+    
+    func observemessages() {
+        let ref = FIRDatabase.database().reference().child("messages")
+        ref.observeEventType(.ChildAdded, withBlock: { (snapshot) in
+            
+            if let dictionary = snapshot.value as? [String:AnyObject] {
+                let message = Message()
+                message.setValuesForKeysWithDictionary(dictionary)
+                self.messages.append(message)
+                
+             dispatch_async(dispatch_get_main_queue(), { 
+                self.tableView.reloadData()
+             })
+            
+            }
+            }, withCancelBlock: nil)
+    }
+    
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return messages.count
+    }
+    
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = UITableViewCell(style: .Subtitle, reuseIdentifier: "cellId")
+        cell.textLabel?.text = messages[indexPath.row].text
+        cell.detailTextLabel?.text = messages[indexPath.row].toId
+        
+        return cell
     }
     
     func handleNewMessage() {
         let newMessageController = NewMessageController()
+        newMessageController.messagesController = self
         let navController = UINavigationController(rootViewController: newMessageController)
         presentViewController(navController, animated: true, completion: nil)
     }
@@ -104,11 +138,14 @@ class MessagesController: UITableViewController {
         
         self.navigationItem.titleView = titleView
         
-        titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showChatController)))
+//        titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showChatController)))
     }
     
-    func showChatController() {
+    func showChatControllerForUser(user: User) {
+        
         let chatLogController = ChatLogController(collectionViewLayout:UICollectionViewFlowLayout())
+        chatLogController.user = user
+        
         navigationController?.pushViewController(chatLogController, animated: true)
     }
     

@@ -13,6 +13,7 @@ class NewMessageController: UITableViewController {
     
     let cellId = "cellId"
     var users = [User]()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +32,7 @@ class NewMessageController: UITableViewController {
         FIRDatabase.database().reference().child("users").observeEventType(.ChildAdded, withBlock: { (snapshot) in
             if let dictionary = snapshot.value as? [String: AnyObject] {
                 let user = User()
+                user.id = snapshot.key
                 user.setValuesForKeysWithDictionary(dictionary)
                 self.users.append(user)
                 dispatch_async(dispatch_get_main_queue(), { 
@@ -43,6 +45,16 @@ class NewMessageController: UITableViewController {
     
     func handleCancel() {
         dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    var messagesController: MessagesController?
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        dismissViewControllerAnimated(true) {
+            
+            let user = self.users[indexPath.row]
+            self.messagesController?.showChatControllerForUser(user)
+        }
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
