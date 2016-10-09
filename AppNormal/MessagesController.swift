@@ -10,6 +10,8 @@ import UIKit
 import Firebase
 
 class MessagesController: UITableViewController {
+    
+    let cellId = "cellId"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,12 +24,60 @@ class MessagesController: UITableViewController {
         }
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Compose, target: self, action: #selector(handleNewMessage))
         navigationItem.rightBarButtonItem?.tintColor = UIColor(red: 0.05, green: 0.00, blue: 0.00, alpha: 1.0)
-        checkIfUserIsLoggedIn()
         
-        observemessages()
+        checkIfUserIsLoggedIn()
+        tableView.registerClass(UserCell.self, forCellReuseIdentifier: cellId)
+        tableView.separatorColor = UIColor(red: 0.73, green: 0.00, blue: 0.00, alpha: 1.0)
+        tableView.backgroundColor = UIColor(red: 0.17, green: 0.05, blue: 0.00, alpha: 1.0)
+        
+//        observemessages()
+        
+       
     }
     
+   
+    
     var messages = [Message]()
+    var messagesDictionary = [String: Message]()
+    
+    func observeUserMessages() {
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
+        
+        let ref = FIRDatabase.database().reference().child("user-messages").child(uid)
+        ref.observeEventType(.ChildAdded, withBlock: { (snapshot) in
+            
+            let messageId = snapshot.key
+            let messageReference = FIRDatabase.database().reference().child("messages").child(messageId)
+            
+            messageReference.observeSingleEventOfType(.Value, withBlock: { (snapshot) in
+                
+                if let dictionary = snapshot.value as? [String:AnyObject] {
+                    let message = Message()
+                    message.setValuesForKeysWithDictionary(dictionary)
+                    //                self.messages.append(message)
+                    
+                    if let toId = message.toId {
+                        self.messagesDictionary[toId] = message
+                        
+                        self.messages = Array(self.messagesDictionary.values)
+                        self.messages.sortInPlace({ (m1, m2) -> Bool in
+                            return m1.timestamp?.intValue > m2.timestamp?.intValue
+                        })
+                    }
+                    
+                    
+                    dispatch_async(dispatch_get_main_queue(), {
+                        self.tableView.reloadData()
+                    })
+                    
+                }
+                
+                }, withCancelBlock: nil)
+            
+            }, withCancelBlock: nil)
+    }
     
     func observemessages() {
         let ref = FIRDatabase.database().reference().child("messages")
@@ -36,7 +86,17 @@ class MessagesController: UITableViewController {
             if let dictionary = snapshot.value as? [String:AnyObject] {
                 let message = Message()
                 message.setValuesForKeysWithDictionary(dictionary)
-                self.messages.append(message)
+//                self.messages.append(message)
+                
+                if let toId = message.toId {
+                    self.messagesDictionary[toId] = message
+                    
+                    self.messages = Array(self.messagesDictionary.values)
+                    self.messages.sortInPlace({ (m1, m2) -> Bool in
+                        return m1.timestamp?.intValue > m2.timestamp?.intValue
+                    })
+                }
+                
                 
              dispatch_async(dispatch_get_main_queue(), { 
                 self.tableView.reloadData()
@@ -50,10 +110,15 @@ class MessagesController: UITableViewController {
         return messages.count
     }
     
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 72
+    }
+    
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .Subtitle, reuseIdentifier: "cellId")
-        cell.textLabel?.text = messages[indexPath.row].text
-        cell.detailTextLabel?.text = messages[indexPath.row].toId
+        let cell = tableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath) as! UserCell
+        
+        let message = messages[indexPath.row]
+        cell.message = message
         
         return cell
     }
@@ -89,9 +154,16 @@ class MessagesController: UITableViewController {
     }
     
     func setupNavBarWithUser(user: User) {
+        messages.removeAll()
+        messagesDictionary.removeAll()
+        tableView.reloadData()
+        
+        observeUserMessages()
+        
+        
         let titleView = UIView()
         titleView.frame = CGRect(x: 0, y: 0, width: 100, height: 40)
-//        titleView.backgroundColor = UIColor.grayColor()
+
         
         let containerView = UIView()
         
