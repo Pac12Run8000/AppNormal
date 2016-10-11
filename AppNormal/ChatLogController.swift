@@ -38,8 +38,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 }
                 let message = Message()
                 message.setValuesForKeysWithDictionary(dictionary)
-                
+                // Note this is where we will add search functionality
                 if message.chatPartnerId() == self.user?.id {
+                // if a certain criterion is met, we will append
                     self.messages.append(message)
                     dispatch_async(dispatch_get_main_queue(), {
                         self.collectionView?.reloadData()
@@ -53,7 +54,21 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     }
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-        return CGSize(width: view.frame.width, height: 80)
+        
+        var height:CGFloat = 80
+        
+        if let text = messages[indexPath.item].text {
+            height = estimatedFrameForText(text).height + 20
+        }
+        
+        
+        return CGSize(width: view.frame.width, height: height)
+    }
+    
+    private func estimatedFrameForText(text:String) -> CGRect {
+        let size = CGSize(width: 200, height: 1000)
+        let options = NSStringDrawingOptions.UsesFontLeading.union(.UsesLineFragmentOrigin)
+        return NSString(string: text).boundingRectWithSize(size, options: options, attributes: [NSFontAttributeName:UIFont.systemFontOfSize(18)], context: nil)
     }
     
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -64,6 +79,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cellId, forIndexPath: indexPath) as! ChatMessageCell
         let message = messages[indexPath.row]
         cell.textView.text = message.text
+
+        cell.bubbleWidthAnchor?.constant = estimatedFrameForText(message.text!).width + 32
+        
         return cell
     }
     
@@ -71,11 +89,18 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 107, right: 0)
+        collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 107, right: 0)
         collectionView?.backgroundColor = UIColor(red: 0.17, green: 0.05, blue: 0.00, alpha: 1.0)
         collectionView?.alwaysBounceVertical = true
         collectionView?.registerClass(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
         setUpInputComponents()
        
+    }
+    
+    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        collectionView?.collectionViewLayout.invalidateLayout()
     }
     
     
@@ -96,7 +121,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         view.addSubview(containerView)
         
         containerView.leftAnchor.constraintEqualToAnchor(view.leftAnchor).active = true
-        containerView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor,constant: -50).active = true
+        containerView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor,constant: -49).active = true
         containerView.widthAnchor.constraintEqualToAnchor(view.widthAnchor).active = true
         containerView.heightAnchor.constraintEqualToConstant(50).active = true
         
@@ -147,6 +172,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 print(error)
                 return
             }
+            
+            self.inputTextField.text = nil
             
             let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(fromId)
             let messageId = childRef.key

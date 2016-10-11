@@ -17,6 +17,8 @@
 		0955D64E1DA7E244009CACAA /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0955D64D1DA7E244009CACAA /* Extensions.swift */; };
 		0955D6501DA850FF009CACAA /* ChatLogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0955D64F1DA850FF009CACAA /* ChatLogController.swift */; };
 		0955D6521DA8B4F0009CACAA /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0955D6511DA8B4F0009CACAA /* Message.swift */; };
+		0955D6551DA9AE1F009CACAA /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0955D6541DA9AE1F009CACAA /* UserCell.swift */; };
+		0955D6571DABF2BD009CACAA /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0955D6561DABF2BD009CACAA /* ChatMessageCell.swift */; };
 		09819C001DA55D6C0025A1AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 09819BFF1DA55D6C0025A1AF /* GoogleService-Info.plist */; };
 		0985C3951DA44D7000998B63 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0985C3941DA44D7000998B63 /* AppDelegate.swift */; };
 		0985C3971DA44D7000998B63 /* MessagesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0985C3961DA44D7000998B63 /* MessagesController.swift */; };
@@ -37,6 +39,8 @@
 		0955D64D1DA7E244009CACAA /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		0955D64F1DA850FF009CACAA /* ChatLogController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatLogController.swift; sourceTree = "<group>"; };
 		0955D6511DA8B4F0009CACAA /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		0955D6541DA9AE1F009CACAA /* UserCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
+		0955D6561DABF2BD009CACAA /* ChatMessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
 		09819BFF1DA55D6C0025A1AF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0985C3911DA44D7000998B63 /* AppNormal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppNormal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0985C3941DA44D7000998B63 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -94,6 +98,15 @@
 			name = Helpers;
 			sourceTree = "<group>";
 		};
+		0955D6531DA9ADF8009CACAA /* View */ = {
+			isa = PBXGroup;
+			children = (
+				0955D6541DA9AE1F009CACAA /* UserCell.swift */,
+				0955D6561DABF2BD009CACAA /* ChatMessageCell.swift */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
 		0985C3881DA44D7000998B63 = {
 			isa = PBXGroup;
 			children = (
@@ -115,6 +128,7 @@
 		0985C3931DA44D7000998B63 /* AppNormal */ = {
 			isa = PBXGroup;
 			children = (
+				0955D6531DA9ADF8009CACAA /* View */,
 				0955D64C1DA7E224009CACAA /* Helpers */,
 				0955D6471DA6C85B009CACAA /* Model */,
 				094FC8DE1DA4B9840079EB96 /* Controllers */,
@@ -269,9 +283,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				0985C3971DA44D7000998B63 /* MessagesController.swift in Sources */,
+				0955D6551DA9AE1F009CACAA /* UserCell.swift in Sources */,
 				0985C3951DA44D7000998B63 /* AppDelegate.swift in Sources */,
 				0955D64B1DA6D462009CACAA /* LoginController+handlers.swift in Sources */,
 				094FC8DD1DA4AC370079EB96 /* FeedViewController.swift in Sources */,
+				0955D6571DABF2BD009CACAA /* ChatMessageCell.swift in Sources */,
 				094FC8DB1DA4A5290079EB96 /* CustomTabBarController.swift in Sources */,
 				0955D6501DA850FF009CACAA /* ChatLogController.swift in Sources */,
 				0955D64E1DA7E244009CACAA /* Extensions.swift in Sources */,
