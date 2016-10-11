@@ -79,10 +79,39 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cellId, forIndexPath: indexPath) as! ChatMessageCell
         let message = messages[indexPath.row]
         cell.textView.text = message.text
+        
+        setUpCell(cell, message: message)
 
         cell.bubbleWidthAnchor?.constant = estimatedFrameForText(message.text!).width + 32
         
         return cell
+    }
+    
+    private func setUpCell(cell: ChatMessageCell, message: Message) {
+        if let profileImageUrl = self.user?.profileImageUrl {
+            cell.profileImageView.loadImageUsingCacheWithUrlString(profileImageUrl)
+        }
+        
+        if (message.fromId == FIRAuth.auth()?.currentUser?.uid) {
+            cell.bubbleView.backgroundColor = ChatMessageCell.redishColor
+            cell.textView.textColor = UIColor.whiteColor()
+            cell.profileImageView.hidden = true
+            
+            cell.bubbleViewRightAnchor?.active = true
+            cell.bubbleViewLeftAnchor?.active = false
+
+            
+        } else {
+            
+            cell.bubbleView.backgroundColor = ChatMessageCell.browishColor
+            cell.textView.textColor = UIColor.whiteColor()
+            cell.profileImageView.hidden = false
+            
+            
+            cell.bubbleViewRightAnchor?.active = false
+            cell.bubbleViewLeftAnchor?.active = true
+            
+        }
     }
     
     
@@ -92,7 +121,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
         collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 107, right: 0)
         collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 107, right: 0)
-        collectionView?.backgroundColor = UIColor(red: 0.17, green: 0.05, blue: 0.00, alpha: 1.0)
+        collectionView?.backgroundColor = UIColor(red: 0.05, green: 0.00, blue: 0.00, alpha: 1.0)
         collectionView?.alwaysBounceVertical = true
         collectionView?.registerClass(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
         setUpInputComponents()

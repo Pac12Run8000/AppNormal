@@ -27,11 +27,8 @@ class MessagesController: UITableViewController {
         
         checkIfUserIsLoggedIn()
         tableView.registerClass(UserCell.self, forCellReuseIdentifier: cellId)
-        tableView.separatorColor = UIColor(red: 0.73, green: 0.00, blue: 0.00, alpha: 1.0)
-        tableView.backgroundColor = UIColor(red: 0.17, green: 0.05, blue: 0.00, alpha: 1.0)
-        
-//        observemessages()
-        
+        tableView.separatorColor = ChatMessageCell.orangeishColor
+        tableView.backgroundColor = ChatMessageCell.browishColor
        
     }
     
@@ -66,12 +63,8 @@ class MessagesController: UITableViewController {
                             return m1.timestamp?.intValue > m2.timestamp?.intValue
                         })
                     }
-                    
-                    
-                    dispatch_async(dispatch_get_main_queue(), {
-                        self.tableView.reloadData()
-                    })
-                    
+                    self.timer?.invalidate()
+                    self.timer = NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
                 }
                 
                 }, withCancelBlock: nil)
@@ -79,32 +72,15 @@ class MessagesController: UITableViewController {
             }, withCancelBlock: nil)
     }
     
-    func observemessages() {
-        let ref = FIRDatabase.database().reference().child("messages")
-        ref.observeEventType(.ChildAdded, withBlock: { (snapshot) in
-            
-            if let dictionary = snapshot.value as? [String:AnyObject] {
-                let message = Message()
-                message.setValuesForKeysWithDictionary(dictionary)
-//                self.messages.append(message)
-                
-                if let toId = message.toId {
-                    self.messagesDictionary[toId] = message
-                    
-                    self.messages = Array(self.messagesDictionary.values)
-                    self.messages.sortInPlace({ (m1, m2) -> Bool in
-                        return m1.timestamp?.intValue > m2.timestamp?.intValue
-                    })
-                }
-                
-                
-             dispatch_async(dispatch_get_main_queue(), { 
-                self.tableView.reloadData()
-             })
-            
-            }
-            }, withCancelBlock: nil)
+    var timer:NSTimer?
+    
+    func handleReloadTable() {
+        dispatch_async(dispatch_get_main_queue(), {
+            self.tableView.reloadData()
+        })
     }
+    
+    
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return messages.count

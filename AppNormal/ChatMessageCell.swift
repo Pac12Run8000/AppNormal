@@ -11,6 +11,12 @@ import Firebase
 
 class ChatMessageCell: UICollectionViewCell {
     
+    static let redishColor = UIColor(red: 0.73, green: 0.00, blue: 0.00, alpha: 1.0)
+    static let orangeishColor = UIColor(red: 1.00, green: 0.53, blue: 0.14, alpha: 1.0)
+    static let browishColor = UIColor(red: 0.17, green: 0.05, blue: 0.00, alpha: 1.0)
+    static let lightBrownishColor = UIColor(red: 0.41, green: 0.01, blue: 0.01, alpha: 1.0)
+    static let blackishColor = UIColor(red: 0.05, green: 0.00, blue: 0.00, alpha: 1.0)
+    
     let textView:UITextView = {
         let tv = UITextView()
         tv.translatesAutoresizingMaskIntoConstraints = false
@@ -28,20 +34,43 @@ class ChatMessageCell: UICollectionViewCell {
         view.backgroundColor = UIColor(red: 0.73, green: 0.00, blue: 0.00, alpha: 1.0)
         view.layer.masksToBounds = true
         view.layer.cornerRadius = 16
-        view.layer.borderColor = UIColor.whiteColor().CGColor
-        view.layer.borderWidth = 2
+        view.layer.borderColor = UIColor(red: 1.00, green: 0.53, blue: 0.14, alpha: 1.0).CGColor
+        view.layer.borderWidth = 1
         return view
     }()
     
+    let profileImageView:UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "default")
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.layer.masksToBounds = true
+        imageView.layer.cornerRadius = 16
+        imageView.contentMode = UIViewContentMode.ScaleAspectFill
+        return imageView
+    }()
+    
+    
     var bubbleWidthAnchor:NSLayoutConstraint?
+    var bubbleViewRightAnchor: NSLayoutConstraint?
+    var bubbleViewLeftAnchor: NSLayoutConstraint?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         addSubview(bubbleView)
         addSubview(textView)
+        addSubview(profileImageView)
         
-        bubbleView.rightAnchor.constraintEqualToAnchor(self.rightAnchor, constant: -10).active = true
+        profileImageView.leftAnchor.constraintEqualToAnchor(self.leftAnchor, constant: 8).active = true
+        profileImageView.bottomAnchor.constraintEqualToAnchor(self.bottomAnchor).active = true
+        profileImageView.widthAnchor.constraintEqualToConstant(32).active = true
+        profileImageView.heightAnchor.constraintEqualToConstant(32).active = true
+        
+        
+        bubbleViewLeftAnchor = bubbleView.leftAnchor.constraintEqualToAnchor(profileImageView.rightAnchor, constant: 8)
+        bubbleViewLeftAnchor?.active = false
+        bubbleViewRightAnchor = bubbleView.rightAnchor.constraintEqualToAnchor(self.rightAnchor, constant: -10)
+        bubbleViewRightAnchor?.active = true
         bubbleView.topAnchor.constraintEqualToAnchor(self.topAnchor).active = true
         bubbleWidthAnchor = bubbleView.widthAnchor.constraintEqualToConstant(200)
         bubbleWidthAnchor?.active = true
