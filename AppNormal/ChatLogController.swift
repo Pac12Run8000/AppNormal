@@ -23,11 +23,11 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     var messages = [Message]()
     
     func observeMessages() {
-        guard let uid = FIRAuth.auth()?.currentUser?.uid else {
+        guard let uid = FIRAuth.auth()?.currentUser?.uid, toId = user?.id else {
             return
         }
         
-        let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(uid)
+        let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(uid).child(toId)
         userMessagesRef.observeEventType(.ChildAdded, withBlock: { (snapshot) in
             
             let messageId = snapshot.key
@@ -39,13 +39,10 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 let message = Message()
                 message.setValuesForKeysWithDictionary(dictionary)
                 // Note this is where we will add search functionality
-                if message.chatPartnerId() == self.user?.id {
-                // if a certain criterion is met, we will append
-                    self.messages.append(message)
-                    dispatch_async(dispatch_get_main_queue(), {
-                        self.collectionView?.reloadData()
-                    })
-                }
+                self.messages.append(message)
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.collectionView?.reloadData()
+                })
                 
                 }, withCancelBlock: nil)
             
@@ -61,8 +58,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             height = estimatedFrameForText(text).height + 20
         }
         
-        
-        return CGSize(width: view.frame.width, height: height)
+        let width = UIScreen.mainScreen().bounds.width
+        return CGSize(width: width, height: height)
     }
     
     private func estimatedFrameForText(text:String) -> CGRect {
@@ -124,8 +121,46 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         collectionView?.backgroundColor = UIColor(red: 0.05, green: 0.00, blue: 0.00, alpha: 1.0)
         collectionView?.alwaysBounceVertical = true
         collectionView?.registerClass(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
+        collectionView?.keyboardDismissMode = .Interactive
         setUpInputComponents()
-       
+        setUpKeyboardObservers()
+    }
+    
+    
+    
+
+    
+    override func viewDidDisappear(animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    
+    func setUpKeyboardObservers() {
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(handleKeyboardWillShow), name: UIKeyboardWillShowNotification, object: nil)
+        
+          NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(handleKeyboardWillHide), name: UIKeyboardWillHideNotification, object: nil)
+    }
+    
+    
+    
+    func handleKeyboardWillShow(notification: NSNotification) {
+        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey]?.CGRectValue()
+        let keyboardDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey]?.doubleValue
+        
+        containerViewBottomAnchor?.constant = -keyboardFrame!.height
+        UIView.animateWithDuration(keyboardDuration!) { 
+            self.view.layoutIfNeeded()
+        }
+    }
+    func handleKeyboardWillHide(notification: NSNotification) {
+        let keyboardDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey]?.doubleValue
+        
+        containerViewBottomAnchor?.constant = -49
+        
+        UIView.animateWithDuration(keyboardDuration!) {
+            self.view.layoutIfNeeded()
+        }
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
@@ -140,7 +175,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         textField.delegate = self
         return textField
     }()
-
+    
+    var containerViewBottomAnchor:NSLayoutConstraint?
 
     func setUpInputComponents() {
         let containerView = UIView()
@@ -150,7 +186,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         view.addSubview(containerView)
         
         containerView.leftAnchor.constraintEqualToAnchor(view.leftAnchor).active = true
-        containerView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor,constant: -49).active = true
+        containerViewBottomAnchor = containerView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor,constant: -49)
+        containerViewBottomAnchor?.active = true
         containerView.widthAnchor.constraintEqualToAnchor(view.widthAnchor).active = true
         containerView.heightAnchor.constraintEqualToConstant(50).active = true
         
@@ -195,7 +232,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         let fromId = FIRAuth.auth()!.currentUser!.uid
         let timestamp: NSNumber = Int(NSDate().timeIntervalSince1970)
         let values = ["text":inputTextField.text!, "toId": toId, "fromId": fromId, "timestamp": timestamp]
-//        childRef.updateChildValues(values)
         childRef.updateChildValues(values) { (error, ref) in
             if (error != nil) {
                 print(error)
@@ -204,11 +240,11 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             
             self.inputTextField.text = nil
             
-            let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(fromId)
+            let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(fromId).child(toId)
             let messageId = childRef.key
             userMessagesRef.updateChildValues([messageId: 1])
             
-            let recipientUserMessagesRef = FIRDatabase.database().reference().child("user-messages").child(toId)
+            let recipientUserMessagesRef = FIRDatabase.database().reference().child("user-messages").child(toId).child(fromId)
             recipientUserMessagesRef.updateChildValues([messageId: 1])
             
         }
