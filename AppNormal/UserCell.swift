@@ -14,8 +14,12 @@ class UserCell: UITableViewCell {
     var message: Message? {
         didSet {
             setUpNameAndProfileImage()
+            if let messageText = message?.text {
+                detailTextLabel?.text = messageText
+            } else {
+                detailTextLabel?.text = "New Image"
+            }
             
-            detailTextLabel?.text = message?.text
             if let seconds = message?.timestamp?.doubleValue {
                 let timestampDate = NSDate(timeIntervalSince1970: seconds)
                 
@@ -24,8 +28,6 @@ class UserCell: UITableViewCell {
                 
                 timeLabel.text = dateFormatter.stringFromDate(timestampDate)
             }
-            
-            
             
         }
     }

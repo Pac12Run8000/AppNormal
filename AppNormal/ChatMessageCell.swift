@@ -11,6 +11,8 @@ import Firebase
 
 class ChatMessageCell: UICollectionViewCell {
     
+    var chatLogController: ChatLogController?
+    
     static let redishColor = UIColor(red: 0.73, green: 0.00, blue: 0.00, alpha: 1.0)
     static let orangeishColor = UIColor(red: 1.00, green: 0.53, blue: 0.14, alpha: 1.0)
     static let browishColor = UIColor(red: 0.17, green: 0.05, blue: 0.00, alpha: 1.0)
@@ -50,16 +52,25 @@ class ChatMessageCell: UICollectionViewCell {
         return imageView
     }()
     
-    let messageImageView: UIImageView = {
+    lazy var messageImageView: UIImageView = {
         let imageView = UIImageView()
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.layer.masksToBounds = true
         imageView.layer.cornerRadius = 16
         imageView.contentMode = UIViewContentMode.ScaleAspectFill
+        imageView.userInteractionEnabled = true
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomTap)))
         //imageView.backgroundColor = UIColor.redColor()
         return imageView
     }()
+    
+    func handleZoomTap(tapGesture: UITapGestureRecognizer) {
+        if let imageView = tapGesture.view as? UIImageView {
+            self.chatLogController?.performZoomInForStartingImageView(imageView)
+        }
+        
+    }
     
     
     var bubbleWidthAnchor:NSLayoutConstraint?
