@@ -15,15 +15,15 @@ class MessagesController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.navigationBar.barTintColor = UIColor(red: 1.00, green: 0.53, blue: 0.14, alpha: 1.0)
+        navigationController?.navigationBar.barTintColor = ChatMessageCell.orangeishColor
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .Plain, target: self, action: #selector(handleLogout))
-        navigationItem.leftBarButtonItem?.tintColor = UIColor(red: 0.05, green: 0.00, blue: 0.00, alpha: 1.0)
+        navigationItem.leftBarButtonItem?.tintColor = ChatMessageCell.blackishColor
         if let font = UIFont(name: "Avenir-Book", size: 18) {
             navigationItem.leftBarButtonItem?.setTitleTextAttributes([NSFontAttributeName: font], forState: .Normal)
         }
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Compose, target: self, action: #selector(handleNewMessage))
-        navigationItem.rightBarButtonItem?.tintColor = UIColor(red: 0.05, green: 0.00, blue: 0.00, alpha: 1.0)
+        navigationItem.rightBarButtonItem?.tintColor = ChatMessageCell.blackishColor
         
         checkIfUserIsLoggedIn()
         tableView.registerClass(UserCell.self, forCellReuseIdentifier: cellId)

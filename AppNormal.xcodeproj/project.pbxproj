@@ -19,6 +19,8 @@
 		0955D6521DA8B4F0009CACAA /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0955D6511DA8B4F0009CACAA /* Message.swift */; };
 		0955D6551DA9AE1F009CACAA /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0955D6541DA9AE1F009CACAA /* UserCell.swift */; };
 		0955D6571DABF2BD009CACAA /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0955D6561DABF2BD009CACAA /* ChatMessageCell.swift */; };
+		0955D6591DB118F2009CACAA /* NewPostController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0955D6581DB118F2009CACAA /* NewPostController.swift */; };
+		0955D65B1DB11D17009CACAA /* DeletePostController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0955D65A1DB11D17009CACAA /* DeletePostController.swift */; };
 		09819C001DA55D6C0025A1AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 09819BFF1DA55D6C0025A1AF /* GoogleService-Info.plist */; };
 		0985C3951DA44D7000998B63 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0985C3941DA44D7000998B63 /* AppDelegate.swift */; };
 		0985C3971DA44D7000998B63 /* MessagesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0985C3961DA44D7000998B63 /* MessagesController.swift */; };
@@ -41,6 +43,8 @@
 		0955D6511DA8B4F0009CACAA /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		0955D6541DA9AE1F009CACAA /* UserCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		0955D6561DABF2BD009CACAA /* ChatMessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
+		0955D6581DB118F2009CACAA /* NewPostController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewPostController.swift; sourceTree = "<group>"; };
+		0955D65A1DB11D17009CACAA /* DeletePostController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeletePostController.swift; sourceTree = "<group>"; };
 		09819BFF1DA55D6C0025A1AF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0985C3911DA44D7000998B63 /* AppNormal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppNormal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0985C3941DA44D7000998B63 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -77,6 +81,8 @@
 				0955D6451DA6ABCE009CACAA /* NewMessageController.swift */,
 				0955D64A1DA6D462009CACAA /* LoginController+handlers.swift */,
 				0955D64F1DA850FF009CACAA /* ChatLogController.swift */,
+				0955D6581DB118F2009CACAA /* NewPostController.swift */,
+				0955D65A1DB11D17009CACAA /* DeletePostController.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -290,6 +296,8 @@
 				0955D6571DABF2BD009CACAA /* ChatMessageCell.swift in Sources */,
 				094FC8DB1DA4A5290079EB96 /* CustomTabBarController.swift in Sources */,
 				0955D6501DA850FF009CACAA /* ChatLogController.swift in Sources */,
+				0955D65B1DB11D17009CACAA /* DeletePostController.swift in Sources */,
+				0955D6591DB118F2009CACAA /* NewPostController.swift in Sources */,
 				0955D64E1DA7E244009CACAA /* Extensions.swift in Sources */,
 				0955D6491DA6C87D009CACAA /* User.swift in Sources */,
 				0955D6461DA6ABCE009CACAA /* NewMessageController.swift in Sources */,

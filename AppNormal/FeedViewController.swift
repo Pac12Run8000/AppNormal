@@ -8,16 +8,37 @@
 
 import UIKit
 
-class FeedViewController: UIViewController {
+class FeedViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.navigationBar.barTintColor = ChatMessageCell.orangeishColor
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Compose, target: self, action: #selector(handleAddPostToFeed))
+        navigationItem.leftBarButtonItem?.tintColor = ChatMessageCell.blackishColor
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Trash, target: self, action: #selector(handleDeleteFromFeed))
+        navigationItem.rightBarButtonItem?.tintColor = ChatMessageCell.blackishColor
+        navigationItem.title = "Feed"
+        
+        if let font = UIFont(name: "Avenir-Heavy", size: 18) {
+            navigationController?.navigationBar.titleTextAttributes = [ NSFontAttributeName: font]
+        }
+     
+        tableView.separatorColor = ChatMessageCell.orangeishColor
+        tableView.backgroundColor = ChatMessageCell.lightBrownishColor
 
     }
+    
+    func handleDeleteFromFeed() {
+        let deletePostController = DeletePostController()
+        let navController = UINavigationController(rootViewController: deletePostController)
+        presentViewController(navController, animated: true, completion: nil)
+    }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func handleAddPostToFeed() {
+        let newPostController = NewPostController()
+        let navController = UINavigationController(rootViewController: newPostController)
+        presentViewController(navController, animated: true, completion: nil)
     }
 
     

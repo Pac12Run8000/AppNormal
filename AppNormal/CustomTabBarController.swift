@@ -9,6 +9,8 @@
 import UIKit
 
 class CustomTabBarController: UITabBarController {
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -24,7 +26,12 @@ class CustomTabBarController: UITabBarController {
 //      feedController.tabBarItem.image = UIImage(named: .)
         
         let termsController = UINavigationController(rootViewController: HowToRulesTermsViewController())
-        termsController.tabBarItem.title = "Rules and Terms"
+        termsController.tabBarItem.title = "Terms of Use"
+        
+        self.tabBar.barTintColor = ChatMessageCell.orangeishColor
+        
         viewControllers = [MessageNavController, feedController, termsController]
     }
+    
+    
 }
