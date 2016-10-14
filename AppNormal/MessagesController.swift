@@ -29,9 +29,36 @@ class MessagesController: UITableViewController {
         tableView.registerClass(UserCell.self, forCellReuseIdentifier: cellId)
         tableView.separatorColor = ChatMessageCell.orangeishColor
         tableView.backgroundColor = ChatMessageCell.browishColor
+        
+        tableView.allowsMultipleSelectionDuringEditing = true
        
     }
     
+    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
+        
+        let message = self.messages[indexPath.row]
+        
+        if let chatPartnerId = message.chatPartnerId() {
+            FIRDatabase.database().reference().child("user-messages").child(uid).child(chatPartnerId).removeValueWithCompletionBlock({ (error, ref) in
+                if (error != nil) {
+                    print("Failed message deletion:", error)
+                    return
+                }
+                
+                self.messagesDictionary.removeValueForKey(chatPartnerId)
+                self.attemptReloadOfTable()
+            })
+        }
+        
+        
+    }
    
     
     var messages = [Message]()
@@ -53,6 +80,13 @@ class MessagesController: UITableViewController {
                 let messageId = snapshot.key
                 self.fetchMessageWithMessageId(messageId)
                 }, withCancelBlock: nil)
+            }, withCancelBlock: nil)
+        ref.observeEventType(.ChildRemoved, withBlock: { (snapshot) in
+            print(snapshot.key)
+            print(self.messagesDictionary)
+            self.messagesDictionary.removeValueForKey(snapshot.key)
+            self.attemptReloadOfTable()
+            
             }, withCancelBlock: nil)
     }
     
