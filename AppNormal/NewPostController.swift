@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-class NewPostController: UIViewController {
+class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     let instructionLabel:UILabel = {
         let label = UILabel()
@@ -62,31 +62,75 @@ class NewPostController: UIViewController {
     }
     
     func handleSavePost() {
-        let ref = FIRDatabase.database().reference().child("feed")
-        let childRef = ref.childByAutoId()
+       
+        
         let fromId = FIRAuth.auth()!.currentUser!.uid
         let timestamp: NSNumber = Int(NSDate().timeIntervalSince1970)
         guard let comment = self.descriptionTextField.text else {
             return
         }
-        let values:[String:AnyObject] = ["fromId": fromId, "timestamp": timestamp, "comment": comment]
         
+        
+        
+        //image functionality
+        let imageName = NSUUID().UUIDString
+        let storageRef = FIRStorage.storage().reference().child("post_images").child(imageName)
+        
+        if let uploadData = UIImagePNGRepresentation(self.uploadImage.image!) {
+            
+            storageRef.putData(uploadData, metadata: nil, completion: { (metadata, error) in
+                if (error != nil) {
+                    print("Error:", error)
+                    return
+                }
+                if let postImageUrl = metadata?.downloadURL()?.absoluteString {
+                    let values:[String:AnyObject] = ["fromId": fromId, "timestamp": timestamp, "comment": comment, "postImageUrl":postImageUrl]
+                    self.enterPostIntoDataBase(values)
+                }
+            })
+
+        }
+        
+    }
+    
+    private func enterPostIntoDataBase(values: [String:AnyObject]) {
+        
+        let ref = FIRDatabase.database().reference().child("feed")
+        let childRef = ref.childByAutoId()
         childRef.updateChildValues(values) { (error, ref) in
             if (error != nil) {
                 print(error)
                 return
             }
             print("Data Saved successfully")
-            
         }
-        
     }
     
     
-    
-    
     func handleGetImage() {
-        print("Get Image")
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.allowsEditing = true
+        presentViewController(picker, animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        var selectedImageFromPicker: UIImage?
+        
+        if let editedImage = info["UIImagePickerControllerEditedImage"] as? UIImage {
+            selectedImageFromPicker = editedImage
+        } else if let originalImage = info["UIImagePickerControllerOriginalImage"] as? UIImage {
+           selectedImageFromPicker = originalImage
+        }
+        if let selectedImage = selectedImageFromPicker {
+            uploadImage.image = selectedImage
+        }
+        
+        dismissViewControllerAnimated(true, completion: nil)
     }
     
     
@@ -104,7 +148,7 @@ class NewPostController: UIViewController {
         
         uploadImage.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
         uploadImage.bottomAnchor.constraintEqualToAnchor(descriptionTextField.topAnchor, constant: -10).active = true
-        uploadImage.heightAnchor.constraintEqualToConstant(175).active = true
+        uploadImage.heightAnchor.constraintEqualToConstant(275).active = true
         uploadImage.widthAnchor.constraintEqualToAnchor(view.widthAnchor, constant: -10).active = true
         
         
