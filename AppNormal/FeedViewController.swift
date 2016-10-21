@@ -50,7 +50,7 @@ class FeedViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 275
+        return 300
     }
     
     
@@ -180,7 +180,7 @@ class PostCell: UITableViewCell {
         imgView.image = UIImage(named: "default")
         imgView.translatesAutoresizingMaskIntoConstraints = false
         imgView.layer.masksToBounds = true
-        imgView.layer.cornerRadius = 9
+        
         imgView.contentMode = .ScaleAspectFill
         return imgView
     }()
@@ -209,9 +209,9 @@ class PostCell: UITableViewCell {
         userIcon.widthAnchor.constraintEqualToConstant(40).active = true
         userIcon.heightAnchor.constraintEqualToConstant(40).active = true
         
-        postImageView.leftAnchor.constraintEqualToAnchor(self.leftAnchor, constant: 20).active = true
+        postImageView.centerXAnchor.constraintEqualToAnchor(self.centerXAnchor).active = true
         postImageView.centerYAnchor.constraintEqualToAnchor(self.centerYAnchor, constant: -30).active = true
-        postImageView.widthAnchor.constraintEqualToAnchor(self.widthAnchor, constant: -40).active = true
+        postImageView.widthAnchor.constraintEqualToAnchor(self.widthAnchor).active = true
         postImageView.heightAnchor.constraintEqualToConstant(200).active = true
         
 
