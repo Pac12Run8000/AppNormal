@@ -71,6 +71,7 @@ class FeedViewController: UITableViewController {
         let cell = tableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath) as! PostCell
         let post = posts[indexPath.row]
         cell.commentLabel.text = post.comment
+        cell.dateTimeLabel.text = String(post.timestamp!)
         
 //        cell.detailTextLabel?.text = post.fromId
 
@@ -146,7 +147,7 @@ class FeedViewController: UITableViewController {
 
 class PaddingLabel: UILabel {
     override func drawTextInRect(rect: CGRect) {
-        super.drawTextInRect(CGRect(x: 10, y: 20, width: 300, height: 0))
+        super.drawTextInRect(CGRect(x: 10, y: 15, width: 300, height: 0))
     }
 }
 
@@ -159,24 +160,36 @@ class PostCell: UITableViewCell {
 //        detailTextLabel?.frame = CGRectMake(85, detailTextLabel!.frame.origin.y + 100, detailTextLabel!.frame.width, detailTextLabel!.frame.height)
 //    }
     
+    let dateTimeLabel:PaddingLabel = {
+        let label = PaddingLabel()
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = UIColor.whiteColor()
+        label.backgroundColor = ChatMessageCell.orangeishColor
+        label.layer.masksToBounds = true
+        label.layer.cornerRadius = 10
+        return label
+    }()
   
     
     let commentLabel: PaddingLabel = {
         var label = PaddingLabel()
-        label.backgroundColor = ChatMessageCell.orangeishColor
+        label.numberOfLines = 3
         label.translatesAutoresizingMaskIntoConstraints = false
         label.layer.masksToBounds = true
-        label.layer.cornerRadius = 7
-        label.layer.borderWidth = 2
-        label.layer.backgroundColor = ChatMessageCell.blackishColor.CGColor
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
+        label.layer.borderWidth = 1
+        
         //label.numberOfLines = 5
         
         return label
     
     }()
     
+    //User Icon is hidden for now
     let userIcon: UIImageView = {
         let imgVw = UIImageView()
+        imgVw.hidden = false
         imgVw.translatesAutoresizingMaskIntoConstraints = false
         imgVw.image = UIImage(named: "default")
         imgVw.layer.masksToBounds = true
@@ -208,6 +221,14 @@ class PostCell: UITableViewCell {
         
         addSubview(userIcon)
         
+        addSubview(dateTimeLabel)
+        
+        dateTimeLabel.rightAnchor.constraintEqualToAnchor(self.rightAnchor, constant: -20).active = true
+        dateTimeLabel.topAnchor.constraintEqualToAnchor(self.topAnchor, constant: 20).active = true
+        dateTimeLabel.widthAnchor.constraintEqualToConstant(150).active = true
+        dateTimeLabel.heightAnchor.constraintEqualToConstant(30).active = true
+        
+        
         commentLabel.leftAnchor.constraintEqualToAnchor(postImageView.leftAnchor).active = true
         commentLabel.topAnchor.constraintEqualToAnchor(postImageView.bottomAnchor, constant: 20).active = true
         commentLabel.widthAnchor.constraintEqualToAnchor(postImageView.widthAnchor).active = true
@@ -215,15 +236,15 @@ class PostCell: UITableViewCell {
         
         
         
-        userIcon.topAnchor.constraintEqualToAnchor(postImageView.bottomAnchor, constant: -10).active = true
+        userIcon.topAnchor.constraintEqualToAnchor(postImageView.bottomAnchor, constant: -15).active = true
         userIcon.leftAnchor.constraintEqualToAnchor(postImageView.leftAnchor).active = true
         userIcon.widthAnchor.constraintEqualToConstant(40).active = true
         userIcon.heightAnchor.constraintEqualToConstant(40).active = true
         
         postImageView.centerXAnchor.constraintEqualToAnchor(self.centerXAnchor).active = true
-        postImageView.centerYAnchor.constraintEqualToAnchor(self.centerYAnchor, constant: -30).active = true
+        postImageView.topAnchor.constraintEqualToAnchor(self.topAnchor).active = true
         postImageView.widthAnchor.constraintEqualToAnchor(self.widthAnchor).active = true
-        postImageView.heightAnchor.constraintEqualToConstant(200).active = true
+        postImageView.heightAnchor.constraintEqualToConstant(220).active = true
         
 
     }
