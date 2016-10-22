@@ -35,7 +35,7 @@ class FeedViewController: UITableViewController {
             if let dictionary = snapshot.value as? [String: AnyObject] {
                 let post = Post()
                 post.setValuesForKeysWithDictionary(dictionary)
-                self.posts.append(post)
+                self.posts.append(post)                
                 
                 dispatch_async(dispatch_get_main_queue(), { 
                      self.tableView.reloadData()
@@ -51,6 +51,17 @@ class FeedViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         return 300
+    }
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        //        let uId = posts[indexPath.row].fromId
+        
+        let postDetailController = PostDetailController()
+        
+        let myPosts = posts[indexPath.row]
+        postDetailController.post = myPosts
+        navigationController?.pushViewController(postDetailController, animated: true)
+        
     }
     
     
