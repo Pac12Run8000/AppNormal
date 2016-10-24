@@ -31,9 +31,11 @@ class FeedViewController: UITableViewController {
     
     func fetchPost() {
         FIRDatabase.database().reference().child("feed").observeEventType(.ChildAdded, withBlock: { (snapshot) in
-            
+            //print(snapshot)
+            let postId = snapshot.key
             if let dictionary = snapshot.value as? [String: AnyObject] {
                 let post = Post()
+                post.postId = postId
                 post.setValuesForKeysWithDictionary(dictionary)
                 self.posts.append(post)                
                 
