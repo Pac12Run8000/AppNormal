@@ -93,7 +93,7 @@ class FeedViewController: UITableViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Trash, target: self, action: #selector(handleDeleteFromFeed))
         navigationItem.rightBarButtonItem?.tintColor = ChatMessageCell.blackishColor
         
-        if let font = UIFont(name: "Avenir-Heavy", size: 18) {
+        if let font = UIFont(name: "Avenir-Heavy", size: 20) {
             navigationController?.navigationBar.titleTextAttributes = [ NSFontAttributeName: font]
         }
     }
