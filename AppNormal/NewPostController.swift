@@ -15,6 +15,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Click box below to add photo"
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
         return label
     }()
     
@@ -35,6 +36,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
     let descriptionTextField: UITextField = {
         let txtField = UITextField()
         txtField.placeholder = "Add message ..."
+        txtField.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
         txtField.translatesAutoresizingMaskIntoConstraints = false
         txtField.borderStyle = .RoundedRect
         
@@ -86,6 +88,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
                 if let postImageUrl = metadata?.downloadURL()?.absoluteString {
                     let values:[String:AnyObject] = ["fromId": fromId, "timestamp": timestamp, "comment": comment, "postImageUrl":postImageUrl]
                     self.enterPostIntoDataBase(values)
+                    self.dismissViewControllerAnimated(true, completion: nil)
                 }
             })
 
