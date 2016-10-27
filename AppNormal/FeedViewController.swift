@@ -72,13 +72,32 @@ class FeedViewController: UITableViewController {
        
         let cell = tableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath) as! PostCell
         let post = posts[indexPath.row]
+        
+        
+        if let fromId = post.fromId {
+            let ref = FIRDatabase.database().reference().child("users").child(fromId)
+            ref.observeSingleEventOfType(.Value, withBlock: { (snapshot) in
+
+                if let dictionary = snapshot.value as? [String:AnyObject] {
+                    cell.userNamelabel.text = dictionary["name"] as? String
+                    
+                    if let profileImageUrl = dictionary["profileImageUrl"] as? String {
+                        cell.userIcon.loadImageUsingCacheWithUrlString(profileImageUrl)
+                    }
+                }
+                }, withCancelBlock: nil)
+        
+        }
+        
+        
+        
         cell.commentLabel.text = post.comment
-        cell.dateTimeLabel.text = String(post.timestamp!)
         
-//        cell.detailTextLabel?.text = post.fromId
-
-
         
+        
+        if let timestamp = post.timestamp {
+             cell.dateTimeLabel.text = String(timestamp)
+        }
         if let postImageUrl = post.postImageUrl {
             cell.postImageView.loadImageUsingCacheWithUrlString(postImageUrl)
         }
@@ -162,6 +181,16 @@ class PostCell: UITableViewCell {
 //        detailTextLabel?.frame = CGRectMake(85, detailTextLabel!.frame.origin.y + 100, detailTextLabel!.frame.width, detailTextLabel!.frame.height)
 //    }
     
+    let userNamelabel:UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 20)
+//        label.text = "user test 1"
+        label.textColor = ChatMessageCell.redishColor
+//        label.backgroundColor = UIColor.lightGrayColor()
+        return label
+    }()
+    
     let dateTimeLabel:PaddingLabel = {
         let label = PaddingLabel()
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
@@ -225,6 +254,13 @@ class PostCell: UITableViewCell {
         
         addSubview(dateTimeLabel)
         
+        addSubview(userNamelabel)
+        
+        userNamelabel.leftAnchor.constraintEqualToAnchor(userIcon.rightAnchor, constant: 10).active = true
+        userNamelabel.bottomAnchor.constraintEqualToAnchor(commentLabel.topAnchor, constant: 0).active = true
+        userNamelabel.widthAnchor.constraintEqualToConstant(150).active = true
+        userNamelabel.topAnchor.constraintEqualToAnchor(postImageView.bottomAnchor, constant: 0).active = true
+        
         dateTimeLabel.rightAnchor.constraintEqualToAnchor(self.rightAnchor, constant: -20).active = true
         dateTimeLabel.topAnchor.constraintEqualToAnchor(self.topAnchor, constant: 20).active = true
         dateTimeLabel.widthAnchor.constraintEqualToConstant(150).active = true
@@ -232,7 +268,7 @@ class PostCell: UITableViewCell {
         
         
         commentLabel.leftAnchor.constraintEqualToAnchor(postImageView.leftAnchor).active = true
-        commentLabel.topAnchor.constraintEqualToAnchor(postImageView.bottomAnchor, constant: 20).active = true
+        commentLabel.topAnchor.constraintEqualToAnchor(postImageView.bottomAnchor, constant: 30).active = true
         commentLabel.widthAnchor.constraintEqualToAnchor(postImageView.widthAnchor).active = true
         commentLabel.heightAnchor.constraintEqualToConstant(40).active = true
         

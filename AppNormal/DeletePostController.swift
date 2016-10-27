@@ -14,6 +14,7 @@ class DeletePostController: UITableViewController {
     let cellId = "cellId"
     
     var posts = [Post]()
+    var users = [User]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,11 +56,24 @@ class DeletePostController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        //let cell = UITableViewCell(style: .Subtitle, reuseIdentifier: "cellId") as! PostCellForDelete
-        
         let cell = tableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath) as! PostCellForDelete
         let post = posts[indexPath.row]
+        
+        if let fromId = post.fromId {
+        let ref = FIRDatabase.database().reference().child("users").child(fromId)
+            ref.observeSingleEventOfType(.Value, withBlock: { (snapshot) in
+                if let dictionary = snapshot.value as? [String:AnyObject] {
+                    if let profileImageUrl = dictionary["profileImageUrl"] as? String {
+                        cell.profileImageView.loadImageUsingCacheWithUrlString(profileImageUrl)
+                    }
+                }
+                }, withCancelBlock: nil)
+            
+        }
+        
+        
         cell.commentLabel.text = post.comment
+        cell.backgroundColor = ChatMessageCell.lightBrownishColor
         
         if let postImageView = post.postImageUrl {
             cell.postImageView.loadImageUsingCacheWithUrlString(postImageView)
@@ -122,6 +136,17 @@ class DeletePostCell: UITableViewCell {
 
 class PostCellForDelete: UITableViewCell {
     
+    let profileImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: "default")
+        imageView.layer.masksToBounds = true
+        imageView.layer.cornerRadius = 15
+        imageView.layer.borderColor = ChatMessageCell.orangeishColor.CGColor
+        imageView.layer.borderWidth = 2
+        return imageView
+    }()
+    
     let postImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "default")
@@ -130,13 +155,17 @@ class PostCellForDelete: UITableViewCell {
         imageView.backgroundColor = UIColor.brownColor()
         imageView.layer.masksToBounds = true
         imageView.layer.cornerRadius = 35
+        imageView.layer.borderWidth = 2
+        imageView.layer.borderColor = UIColor.whiteColor().CGColor
         return imageView
     }()
     
     let commentLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 20)
+        label.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 15)
+//        label.backgroundColor = UIColor.lightGrayColor()
+        label.textColor = UIColor.whiteColor()
         return label
     }()
     
@@ -145,10 +174,16 @@ class PostCellForDelete: UITableViewCell {
         
         addSubview(postImageView)
         addSubview(commentLabel)
+        addSubview(profileImageView)
+        
+        profileImageView.leftAnchor.constraintEqualToAnchor(postImageView.rightAnchor, constant: -15).active = true
+        profileImageView.topAnchor.constraintEqualToAnchor(postImageView.topAnchor, constant: -5).active = true
+        profileImageView.widthAnchor.constraintEqualToConstant(30).active = true
+        profileImageView.heightAnchor.constraintEqualToConstant(30).active = true
         
         commentLabel.leftAnchor.constraintEqualToAnchor(postImageView.rightAnchor, constant: 20).active = true
         commentLabel.centerYAnchor.constraintEqualToAnchor(self.centerYAnchor).active = true
-        commentLabel.widthAnchor.constraintEqualToConstant(100).active = true
+        commentLabel.widthAnchor.constraintEqualToConstant(240).active = true
         commentLabel.heightAnchor.constraintEqualToConstant(50).active = true
         
         
