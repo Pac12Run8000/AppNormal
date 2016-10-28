@@ -7,8 +7,10 @@
 //
 
 import UIKit
+import Firebase
 
 class PostDetailController: UIViewController {
+    var users = [User]()
     
     var post: Post? {
         didSet {
@@ -30,7 +32,6 @@ class PostDetailController: UIViewController {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.borderWidth = 1
-//        view.backgroundColor = UIColor.redColor()
         return view
     }()
     
@@ -55,22 +56,54 @@ class PostDetailController: UIViewController {
         
         return imageView
     }()
+    
+    let profileImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: "default")
+        imageView.layer.cornerRadius = 30
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderColor = ChatMessageCell.orangeishColor.CGColor
+        imageView.layer.borderWidth = 2
+        return imageView
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = UIColor.whiteColor()
         commentField.text = post?.comment
-        if let postImage = post?.postImageUrl {
-            postImageView.loadImageUsingCacheWithUrlString(postImage)
-        }
-        if let timeStampData = post?.timestamp {
-            dateTimeLabel.text = String(timeStampData)
-        }
+        
+        displayImagesAndText()
+        
         
         mainContainer()
         
         
+    }
+    var feedViewController: FeedViewController?
+    
+    
+    func displayImagesAndText() {
+        if let userId = post?.fromId {
+            let ref = FIRDatabase.database().reference().child("users").child(userId)
+            ref.observeSingleEventOfType(.Value, withBlock: { (snapshot) in
+                if let dictionary = snapshot.value as? [String:AnyObject] {
+                    if let profileImageUrl = dictionary["profileImageUrl"] as? String {
+                        self.profileImageView.loadImageUsingCacheWithUrlString(profileImageUrl)
+                    }
+                 }
+                }, withCancelBlock: nil)
+        }
+        
+        if let postImage = post?.postImageUrl {
+            postImageView.loadImageUsingCacheWithUrlString(postImage)
+        }
+        if let timeStampData = post?.timestamp {
+            //dateTimeLabel.text = String(timeStampData)
+            
+            dateTimeLabel.text = feedViewController?.getDateFormat(timeStampData)
+        }
     }
 
     func mainContainer() {
@@ -78,6 +111,12 @@ class PostDetailController: UIViewController {
         labelView.addSubview(commentField)
         view.addSubview(postImageView)
         view.addSubview(dateTimeLabel)
+        view.addSubview(profileImageView)
+        
+        profileImageView.leftAnchor.constraintEqualToAnchor(view.leftAnchor, constant: 20).active = true
+        profileImageView.bottomAnchor.constraintEqualToAnchor(labelView.topAnchor, constant: 20).active = true
+        profileImageView.widthAnchor.constraintEqualToConstant(60).active = true
+        profileImageView.heightAnchor.constraintEqualToConstant(60).active = true
         
         dateTimeLabel.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
         dateTimeLabel.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 65).active = true

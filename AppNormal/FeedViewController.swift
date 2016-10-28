@@ -14,18 +14,18 @@ class FeedViewController: UITableViewController {
     let cellId = "cellId"
     
     var posts = [Post]()
-    var users = [User]()
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationItemsAndBarButtons()
         checkIfUserLoggedInAndSetUpNavbarTitle()
         
+        fetchPost()
         tableView.registerClass(PostCell.self, forCellReuseIdentifier: cellId)
-        
         tableView.separatorColor = ChatMessageCell.orangeishColor
         tableView.backgroundColor = ChatMessageCell.lightBrownishColor
-        fetchPost()
+        
         
     }
     
@@ -59,6 +59,7 @@ class FeedViewController: UITableViewController {
         //        let uId = posts[indexPath.row].fromId
         
         let postDetailController = PostDetailController()
+        postDetailController.feedViewController = self
         
         let myPosts = posts[indexPath.row]
         postDetailController.post = myPosts
@@ -96,12 +97,24 @@ class FeedViewController: UITableViewController {
         
         
         if let timestamp = post.timestamp {
-             cell.dateTimeLabel.text = String(timestamp)
+             cell.dateTimeLabel.text = getDateFormat(timestamp)
         }
         if let postImageUrl = post.postImageUrl {
             cell.postImageView.loadImageUsingCacheWithUrlString(postImageUrl)
         }
         return cell
+    }
+    
+    func getDateFormat(timestamp:NSNumber) -> String {
+        
+        let seconds = timestamp.doubleValue
+        let timeStampDate = NSDate(timeIntervalSince1970: seconds)
+        
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "hh:mm:ss a"
+        let timeVal = dateFormatter.stringFromDate(timeStampDate)
+        
+        return timeVal
     }
     
     func setupNavigationItemsAndBarButtons() {
@@ -226,7 +239,7 @@ class PostCell: UITableViewCell {
         imgVw.layer.masksToBounds = true
         imgVw.layer.cornerRadius = 20
         imgVw.layer.borderWidth = 2
-        imgVw.layer.borderColor = ChatMessageCell.blackishColor.CGColor
+        imgVw.layer.borderColor = ChatMessageCell.orangeishColor.CGColor
         return imgVw
     }()
     

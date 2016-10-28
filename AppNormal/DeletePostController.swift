@@ -14,7 +14,7 @@ class DeletePostController: UITableViewController {
     let cellId = "cellId"
     
     var posts = [Post]()
-    var users = [User]()
+   
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,16 +27,19 @@ class DeletePostController: UITableViewController {
     
     
     func fetchPostsForDeletion() {
-//        guard let uId = FIRAuth.auth()?.currentUser?.uid else {
-//            return
-//        }
+        guard let uId = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
         let ref = FIRDatabase.database().reference().child("feed")
         ref.observeEventType(.ChildAdded, withBlock: { (snapshot) in
             
             if let dictionary = snapshot.value as? [String:AnyObject] {
                 let post = Post()
                 post.setValuesForKeysWithDictionary(dictionary)
-                self.posts.append(post)
+                if (uId == dictionary["fromId"] as? String) {
+                    self.posts.append(post)
+                }
+               
                 
                 dispatch_async(dispatch_get_main_queue(), { 
                     self.tableView.reloadData()
@@ -59,17 +62,18 @@ class DeletePostController: UITableViewController {
         let cell = tableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath) as! PostCellForDelete
         let post = posts[indexPath.row]
         
-        if let fromId = post.fromId {
-        let ref = FIRDatabase.database().reference().child("users").child(fromId)
-            ref.observeSingleEventOfType(.Value, withBlock: { (snapshot) in
-                if let dictionary = snapshot.value as? [String:AnyObject] {
-                    if let profileImageUrl = dictionary["profileImageUrl"] as? String {
-                        cell.profileImageView.loadImageUsingCacheWithUrlString(profileImageUrl)
+       
+            if let fromId = post.fromId {
+                let ref = FIRDatabase.database().reference().child("users").child(fromId)
+                ref.observeSingleEventOfType(.Value, withBlock: { (snapshot) in
+                    if let dictionary = snapshot.value as? [String:AnyObject] {
+                        if let profileImageUrl = dictionary["profileImageUrl"] as? String {
+                            cell.profileImageView.loadImageUsingCacheWithUrlString(profileImageUrl)
+                        }
                     }
-                }
-                }, withCancelBlock: nil)
+                    }, withCancelBlock: nil)
             
-        }
+            }
         
         
         cell.commentLabel.text = post.comment
