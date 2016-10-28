@@ -58,6 +58,8 @@ class DeletePostController: UITableViewController {
         return posts.count
     }
     
+   
+    
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath) as! PostCellForDelete
         let post = posts[indexPath.row]
@@ -74,7 +76,9 @@ class DeletePostController: UITableViewController {
                     }, withCancelBlock: nil)
             
             }
-        
+        if let timestamp = post.timestamp {
+            cell.timestampLabel.text = getDateFormat(timestamp)
+        }
         
         cell.commentLabel.text = post.comment
         cell.backgroundColor = ChatMessageCell.lightBrownishColor
@@ -86,7 +90,17 @@ class DeletePostController: UITableViewController {
         return cell
     }
     
-    
+    func getDateFormat(timestamp:NSNumber) -> String {
+        
+        let seconds = timestamp.doubleValue
+        let timeStampDate = NSDate(timeIntervalSince1970: seconds)
+        
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "hh:mm:ss a"
+        let timeVal = dateFormatter.stringFromDate(timeStampDate)
+        
+        return timeVal
+    }
     
     
     func checkIfUserLoggedInAndSetUpNavbarTitle() {
@@ -173,12 +187,31 @@ class PostCellForDelete: UITableViewCell {
         return label
     }()
     
+    let timestampLabel:PaddingLabel = {
+        let label = PaddingLabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = ChatMessageCell.orangeishColor
+        label.textColor = UIColor.whiteColor()
+        label.layer.masksToBounds = true
+        label.layer.cornerRadius = 15
+        label.text = "HH:MM:SS"
+        label.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 10)
+        //name: "Avenir-Heavy", size: 18
+        return label
+    }()
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: .Subtitle, reuseIdentifier: reuseIdentifier)
         
         addSubview(postImageView)
         addSubview(commentLabel)
         addSubview(profileImageView)
+        addSubview(timestampLabel)
+        
+        timestampLabel.rightAnchor.constraintEqualToAnchor(self.rightAnchor, constant: -20).active = true
+        timestampLabel.topAnchor.constraintEqualToAnchor(self.topAnchor, constant: 5).active = true
+        timestampLabel.widthAnchor.constraintEqualToConstant(100).active = true
+        timestampLabel.heightAnchor.constraintEqualToConstant(30).active = true
         
         profileImageView.leftAnchor.constraintEqualToAnchor(postImageView.rightAnchor, constant: -15).active = true
         profileImageView.topAnchor.constraintEqualToAnchor(postImageView.topAnchor, constant: -5).active = true

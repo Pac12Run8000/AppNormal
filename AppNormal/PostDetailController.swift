@@ -53,7 +53,7 @@ class PostDetailController: UIViewController {
         imageView.image = UIImage(named: "default")
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.backgroundColor = ChatMessageCell.orangeishColor
-        
+        imageView.contentMode = .ScaleAspectFill
         return imageView
     }()
     
@@ -81,7 +81,7 @@ class PostDetailController: UIViewController {
         
         
     }
-    var feedViewController: FeedViewController?
+//    var feedViewController: FeedViewController?
     
     
     func displayImagesAndText() {
@@ -99,11 +99,24 @@ class PostDetailController: UIViewController {
         if let postImage = post?.postImageUrl {
             postImageView.loadImageUsingCacheWithUrlString(postImage)
         }
-        if let timeStampData = post?.timestamp {
-            //dateTimeLabel.text = String(timeStampData)
-            
-            dateTimeLabel.text = feedViewController?.getDateFormat(timeStampData)
+        
+        if let timestamp = post?.timestamp {
+             dateTimeLabel.text = getDateFormat(timestamp)
         }
+        
+       
+    }
+    
+    func getDateFormat(timestamp:NSNumber) -> String {
+    
+        let seconds = timestamp.doubleValue
+        let timeStampDate = NSDate(timeIntervalSince1970: seconds)
+    
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "hh:mm:ss a"
+        let timeVal = dateFormatter.stringFromDate(timeStampDate)
+    
+        return timeVal
     }
 
     func mainContainer() {
