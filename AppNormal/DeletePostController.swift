@@ -77,7 +77,7 @@ class DeletePostController: UITableViewController {
             
             }
         if let timestamp = post.timestamp {
-            cell.timestampLabel.text = getDateFormat(timestamp)
+            cell.timestampLabel.text = getDateFormat(timestamp)            
         }
         
         cell.commentLabel.text = post.comment

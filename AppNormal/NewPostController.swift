@@ -26,9 +26,10 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         image.clipsToBounds = true
         image.layer.cornerRadius = 8
         image.layer.borderWidth = 3
-        image.layer.borderColor = UIColor.whiteColor().CGColor
+        image.layer.borderColor = ChatMessageCell.browishColor.CGColor
         image.userInteractionEnabled = true
         image.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleGetImage)))
+        image.backgroundColor = ChatMessageCell.orangeishColor
         return image
         
     }()
@@ -39,6 +40,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         txtField.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
         txtField.translatesAutoresizingMaskIntoConstraints = false
         txtField.borderStyle = .RoundedRect
+        txtField.layer.borderColor = ChatMessageCell.browishColor.CGColor
         
         return txtField
     }()
@@ -56,7 +58,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         
         navigationController?.navigationBar.barTintColor = ChatMessageCell.orangeishColor
        
-        view.backgroundColor = ChatMessageCell.redishColor
+        view.backgroundColor = UIColor.whiteColor()
         
         setUpContainerView()
 

@@ -29,22 +29,28 @@ class PostCell: UITableViewCell {
                     }, withCancelBlock: nil)
                 
             }            
-            self.commentLabel.text = post?.comment            
+            self.commentLabel.text = post?.comment
             
-            if let seconds = post?.timestamp?.doubleValue {
-                let timestampDate = NSDate(timeIntervalSince1970: seconds)
-                
-                let dateFormatter = NSDateFormatter()
-                dateFormatter.dateFormat = "hh:mm:ss a"
-                dateTimeLabel.text = dateFormatter.stringFromDate(timestampDate)
+            if let seconds = post?.timestamp {
+                dateTimeLabel.text = formatTimeStamp(seconds)
             }
-            
             
            
             if let postImageUrl = post?.postImageUrl {
                 postImageView.loadImageUsingCacheWithUrlString(postImageUrl)
             }
         }
+    }
+    
+   internal func formatTimeStamp(timestamp: NSNumber) -> String {
+        let seconds = timestamp.doubleValue
+        
+        let timstampDate = NSDate(timeIntervalSince1970: seconds)
+        
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "hh:mm:ss a"
+        
+        return dateFormatter.stringFromDate(timstampDate)
     }
     
     //    override func layoutSubviews() {
