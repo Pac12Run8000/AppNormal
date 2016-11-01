@@ -35,9 +35,9 @@ class FeedViewController: UITableViewController {
             //print(snapshot)
             let postId = snapshot.key
             if let dictionary = snapshot.value as? [String: AnyObject] {
-                let post = Post()
+                let post = Post(dictionary: dictionary)
                 post.postId = postId
-                post.setValuesForKeysWithDictionary(dictionary)
+                //post.setValuesForKeysWithDictionary(dictionary)
                 self.posts.append(post)
                 
                 self.posts.sortInPlace({ (post1, post2) -> Bool in

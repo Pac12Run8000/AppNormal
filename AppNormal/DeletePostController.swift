@@ -34,7 +34,7 @@ class DeletePostController: UITableViewController {
         ref.observeEventType(.ChildAdded, withBlock: { (snapshot) in
             
             if let dictionary = snapshot.value as? [String:AnyObject] {
-                let post = Post()
+                let post = Post(dictionary: dictionary)
                 post.setValuesForKeysWithDictionary(dictionary)
                 if (uId == dictionary["fromId"] as? String) {
                     self.posts.append(post)
