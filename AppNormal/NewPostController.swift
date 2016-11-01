@@ -8,14 +8,18 @@
 
 import UIKit
 import Firebase
+import MobileCoreServices
+import AVFoundation
 
 class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     let instructionLabel:UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Click box below to add photo"
-        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
+        label.text = "Click box below to add photo \r\n or video"
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
+        label.numberOfLines = 3
+        label.textAlignment = .Center
         return label
     }()
     
@@ -28,7 +32,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         image.layer.borderWidth = 3
         image.layer.borderColor = ChatMessageCell.browishColor.CGColor
         image.userInteractionEnabled = true
-        image.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleGetImage)))
+        image.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleUploadTap)))
         image.backgroundColor = ChatMessageCell.orangeishColor
         return image
         
@@ -62,7 +66,41 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         
         setUpContainerView()
 
-       
+       setUpkeyboardObserver()
+    }
+    
+    func setUpkeyboardObserver() {
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow), name: UIKeyboardWillShowNotification, object: nil)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillHide), name: UIKeyboardWillHideNotification, object: nil)
+    }
+    
+    func keyboardWillHide(notification: NSNotification) {
+        
+        
+        let keyboardDuration = notification.userInfo?[UIKeyboardAnimationCurveUserInfoKey]?.doubleValue
+        
+        descriptionTextFieldBottomAnchor?.constant = -10
+        UIView.animateWithDuration(keyboardDuration!) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    
+    func keyboardWillShow(notification: NSNotification) {
+        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey]?.CGRectValue()
+        let keyboardDuration = notification.userInfo?[UIKeyboardAnimationCurveUserInfoKey]?.doubleValue
+        
+        descriptionTextFieldBottomAnchor?.constant = -10 + -keyboardFrame!.height
+        UIView.animateWithDuration(keyboardDuration!) {
+            self.view.layoutIfNeeded()
+        }
+        
     }
     
     func handleSavePost() {
@@ -90,6 +128,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
                 if let postImageUrl = metadata?.downloadURL()?.absoluteString {
                     let values:[String:AnyObject] = ["fromId": fromId, "timestamp": timestamp, "comment": comment, "postImageUrl":postImageUrl]
                     self.enterPostIntoDataBase(values)
+                    
                     self.dismissViewControllerAnimated(true, completion: nil)
                 }
             })
@@ -112,10 +151,13 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
     }
     
     
-    func handleGetImage() {
+    func handleUploadTap() {
         let picker = UIImagePickerController()
+        
         picker.delegate = self
         picker.allowsEditing = true
+        picker.mediaTypes = [kUTTypeImage as String, kUTTypeMovie as String]
+        
         presentViewController(picker, animated: true, completion: nil)
     }
     
@@ -124,21 +166,57 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
     }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        if let videoUrl = info[UIImagePickerControllerMediaURL] as? NSURL {
+            
+            handleVideoSelectedForUrl(videoUrl)
+            
+        } else {
+            
+           handleImageSelectedForInfo(info)
+            
+        }
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    private func handleVideoSelectedForUrl(url: NSURL) {
+        let filename = "testFileName.mov"
+        let uploadTask = FIRStorage.storage().reference().child(filename).putFile(url, metadata: nil, completion: { (metadata, error) in
+            if (error != nil) {
+                print("Failed Upload of Video:", error)
+                return
+            }
+            
+            if let storageUrl = metadata?.downloadURL()?.absoluteString {
+                print("storageUrl:", storageUrl)
+            }
+        })
+        
+        uploadTask.observeStatus(.Progress) { (snapshot) in
+            if let completedUnitCount = snapshot.progress?.completedUnitCount {
+                self.navigationItem.title = String(completedUnitCount)
+            }
+            
+        uploadTask.observeStatus(.Success, handler: { (snapshot) in
+            self.navigationItem.title = "video uploaded"
+        })
+            //print(snapshot.progress?.completedUnitCount)
+        }
+    }
+    
+    private func handleImageSelectedForInfo(info:[String: AnyObject]) {
         var selectedImageFromPicker: UIImage?
         
         if let editedImage = info["UIImagePickerControllerEditedImage"] as? UIImage {
             selectedImageFromPicker = editedImage
         } else if let originalImage = info["UIImagePickerControllerOriginalImage"] as? UIImage {
-           selectedImageFromPicker = originalImage
+            selectedImageFromPicker = originalImage
         }
         if let selectedImage = selectedImageFromPicker {
             uploadImage.image = selectedImage
         }
-        
-        dismissViewControllerAnimated(true, completion: nil)
     }
     
-    
+    var descriptionTextFieldBottomAnchor: NSLayoutConstraint?
     
     
     func setUpContainerView() {
@@ -149,16 +227,21 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         instructionLabel.leftAnchor.constraintEqualToAnchor(view.leftAnchor, constant: 10).active = true
         instructionLabel.bottomAnchor.constraintEqualToAnchor(uploadImage.topAnchor, constant: 10).active = true
         instructionLabel.widthAnchor.constraintEqualToAnchor(view.widthAnchor, constant: -10).active = true
-        instructionLabel.heightAnchor.constraintEqualToConstant(50).active = true
+        instructionLabel.heightAnchor.constraintEqualToConstant(100).active = true
         
         uploadImage.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
         uploadImage.bottomAnchor.constraintEqualToAnchor(descriptionTextField.topAnchor, constant: -10).active = true
-        uploadImage.heightAnchor.constraintEqualToConstant(275).active = true
-        uploadImage.widthAnchor.constraintEqualToAnchor(view.widthAnchor, constant: -10).active = true
+        uploadImage.widthAnchor.constraintEqualToConstant(100).active = true
+        uploadImage.heightAnchor.constraintEqualToConstant(100).active = true
+//        uploadImage.heightAnchor.constraintEqualToConstant(275).active = true
+//        uploadImage.widthAnchor.constraintEqualToAnchor(view.widthAnchor, constant: -10).active = true
         
         
         descriptionTextField.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
-        descriptionTextField.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor, constant: -10).active = true
+        
+        descriptionTextFieldBottomAnchor = descriptionTextField.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor, constant: -10)
+        descriptionTextFieldBottomAnchor?.active = true
+        
         descriptionTextField.widthAnchor.constraintEqualToAnchor(view.widthAnchor, constant: -10).active = true
         descriptionTextField.heightAnchor.constraintEqualToConstant(50).active = true
         

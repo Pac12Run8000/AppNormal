@@ -14,4 +14,5 @@ class Post: NSObject {
     var postId: String?
     var timestamp: NSNumber?
     var postImageUrl: String?
+    var videoUrl: String?
 }
