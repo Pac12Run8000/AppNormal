@@ -20,6 +20,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
         label.numberOfLines = 3
         label.textAlignment = .Center
+        label.backgroundColor = ChatMessageCell.redishColor
         return label
     }()
     
@@ -48,12 +49,15 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         
         return txtField
     }()
+    
+   
 
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: #selector(handleCancel))
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Save, target: self, action: #selector(handleSavePost))
+        
         
         
         
@@ -179,6 +183,10 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
     }
     
     private func handleVideoSelectedForUrl(url: NSURL) {
+        let timestamp:NSNumber = Int(NSDate().timeIntervalSince1970)
+        guard let fromId = FIRAuth.auth()?.currentUser?.uid, comment = self.descriptionTextField.text else {
+            return
+        }
         let filename = "testFileName.mov"
         let uploadTask = FIRStorage.storage().reference().child(filename).putFile(url, metadata: nil, completion: { (metadata, error) in
             if (error != nil) {
@@ -186,8 +194,10 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
                 return
             }
             
-            if let storageUrl = metadata?.downloadURL()?.absoluteString {
-                print("storageUrl:", storageUrl)
+            if let videoUrl = metadata?.downloadURL()?.absoluteString {
+                //print("videoUrl:", storageUrl)
+                 let properties:[String:AnyObject] = ["fromId": fromId, "timestamp": timestamp, "comment": comment, "videoUrl":videoUrl]
+                 self.sendVideoPostwithProperties(properties)
             }
         })
         
@@ -197,10 +207,52 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
             }
             
         uploadTask.observeStatus(.Success, handler: { (snapshot) in
-            self.navigationItem.title = "video uploaded"
+            self.navigationItem.title = "Video ready to be saved"
         })
-            //print(snapshot.progress?.completedUnitCount)
+           
         }
+    }
+    
+    private func sendVideoPostwithProperties(properties: [String: AnyObject]) {
+        let ref = FIRDatabase.database().reference().child("feed")
+        let childRef = ref.childByAutoId()
+        
+        childRef.updateChildValues(properties) { (error, ref) in
+            if (error != nil) {
+                print("error:", error)
+                return
+            }
+            print("Upload Successful!!!")
+        }
+        
+        
+//        let ref = FIRDatabase.database().reference().child("messages")
+//        let childRef = ref.childByAutoId()
+//        
+//        let toId = user!.id!
+//        let fromId = FIRAuth.auth()!.currentUser!.uid
+//        let timestamp: NSNumber = Int(NSDate().timeIntervalSince1970)
+//        var values: [String:AnyObject] = ["toId": toId, "fromId": fromId, "timestamp": timestamp]
+//        
+//        properties.forEach({values[$0] = $1})
+//        
+//        childRef.updateChildValues(values) { (error, ref) in
+//            if (error != nil) {
+//                print(error)
+//                return
+//            }
+//            
+//            self.inputTextField.text = nil
+//            
+//            let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(fromId).child(toId)
+//            let messageId = childRef.key
+//            userMessagesRef.updateChildValues([messageId: 1])
+//            
+//            let recipientUserMessagesRef = FIRDatabase.database().reference().child("user-messages").child(toId).child(fromId)
+//            recipientUserMessagesRef.updateChildValues([messageId: 1])
+//            
+//        }
+        
     }
     
     private func handleImageSelectedForInfo(info:[String: AnyObject]) {
@@ -224,18 +276,17 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         view.addSubview(uploadImage)
         view.addSubview(instructionLabel)
         
-        instructionLabel.leftAnchor.constraintEqualToAnchor(view.leftAnchor, constant: 10).active = true
-        instructionLabel.bottomAnchor.constraintEqualToAnchor(uploadImage.topAnchor, constant: 10).active = true
+        
+        
+        instructionLabel.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
+        instructionLabel.bottomAnchor.constraintEqualToAnchor(uploadImage.topAnchor, constant: -10).active = true
         instructionLabel.widthAnchor.constraintEqualToAnchor(view.widthAnchor, constant: -10).active = true
-        instructionLabel.heightAnchor.constraintEqualToConstant(100).active = true
+        instructionLabel.heightAnchor.constraintEqualToConstant(50).active = true
         
         uploadImage.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
         uploadImage.bottomAnchor.constraintEqualToAnchor(descriptionTextField.topAnchor, constant: -10).active = true
         uploadImage.widthAnchor.constraintEqualToConstant(100).active = true
         uploadImage.heightAnchor.constraintEqualToConstant(100).active = true
-//        uploadImage.heightAnchor.constraintEqualToConstant(275).active = true
-//        uploadImage.widthAnchor.constraintEqualToAnchor(view.widthAnchor, constant: -10).active = true
-        
         
         descriptionTextField.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
         
