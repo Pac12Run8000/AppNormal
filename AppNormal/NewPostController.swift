@@ -16,7 +16,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
     let instructionLabel:UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Click box below to add photo \r\n or video"
+        label.text = "Click box below to add photo."
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
         label.numberOfLines = 3
         label.textAlignment = .Center
@@ -175,7 +175,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
             handleVideoSelectedForUrl(videoUrl)
             
         } else {
-            
+        
            handleImageSelectedForInfo(info)
             
         }
@@ -187,8 +187,9 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         guard let fromId = FIRAuth.auth()?.currentUser?.uid, comment = self.descriptionTextField.text else {
             return
         }
-        let filename = "testFileName.mov"
-        let uploadTask = FIRStorage.storage().reference().child(filename).putFile(url, metadata: nil, completion: { (metadata, error) in
+        
+        let filename = "\(NSUUID().UUIDString).mov"
+        let uploadTask = FIRStorage.storage().reference().child("post_videos").child(filename).putFile(url, metadata: nil, completion: { (metadata, error) in
             if (error != nil) {
                 print("Failed Upload of Video:", error)
                 return
