@@ -8,6 +8,9 @@
 
 import UIKit
 import Firebase
+import AVFoundation
+import MobileCoreServices
+
 
 class FeedViewController: UITableViewController {
     
@@ -75,7 +78,9 @@ class FeedViewController: UITableViewController {
         let myPosts = posts[indexPath.row]
         postDetailController.post = myPosts
         navigationController?.pushViewController(postDetailController, animated: true)
-        
+        if let videoValue = myPosts.videoUrl {
+            print(videoValue)
+        }
     }
     
     
@@ -84,9 +89,12 @@ class FeedViewController: UITableViewController {
        
         let cell = tableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath) as! PostCell
         
-        let post = posts[indexPath.row]
+        let post = posts[indexPath.row] 
         cell.post = post
         
+        if post.videoUrl != nil {
+            cell.postImageView.image = UIImage(named: "addImage-3")
+        }
         return cell
     }
     
