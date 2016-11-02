@@ -39,8 +39,11 @@ class PostCell: UITableViewCell {
             if let postImageUrl = post?.postImageUrl {
                 postImageView.loadImageUsingCacheWithUrlString(postImageUrl)
             }
+            
         }
     }
+    
+   
     
    internal func formatTimeStamp(timestamp: NSNumber) -> String {
         let seconds = timestamp.doubleValue
