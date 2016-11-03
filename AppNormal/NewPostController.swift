@@ -16,11 +16,12 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
     let instructionLabel:UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Click box below to add photo."
+        label.text = "Click box below to add photo.\r\nor video"
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
         label.numberOfLines = 3
         label.textAlignment = .Center
         label.backgroundColor = ChatMessageCell.redishColor
+        label.textColor = UIColor.whiteColor()
         return label
     }()
     
@@ -42,10 +43,10 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
     let descriptionTextField: UITextField = {
         let txtField = UITextField()
         txtField.placeholder = "Add message ..."
-        txtField.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
         txtField.translatesAutoresizingMaskIntoConstraints = false
         txtField.borderStyle = .RoundedRect
         txtField.layer.borderColor = ChatMessageCell.browishColor.CGColor
+        txtField.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 15)
         
         return txtField
     }()
@@ -56,7 +57,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         super.viewDidLoad()
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: #selector(handleCancel))
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Save, target: self, action: #selector(handleSavePost))
+        //navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Save, target: self, action: #selector(handleSavePost))
         
         
         
@@ -156,6 +157,12 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
     
     
     func handleUploadTap() {
+        if ((descriptionTextField.text?.isEmpty) != false) {
+            instructionLabel.text = "Add message for photo\r\nClick box below to add photo.\r\nor video"
+            
+        }
+        else {
+            instructionLabel.text = "Click box below to add photo.\r\nor video"
         let picker = UIImagePickerController()
         
         picker.delegate = self
@@ -163,6 +170,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         picker.mediaTypes = [kUTTypeImage as String, kUTTypeMovie as String]
         
         presentViewController(picker, animated: true, completion: nil)
+        }
     }
     
     func imagePickerControllerDidCancel(picker: UIImagePickerController) {
@@ -267,6 +275,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         if let selectedImage = selectedImageFromPicker {
             uploadImage.image = selectedImage
         }
+        handleSavePost()
     }
     
     var descriptionTextFieldBottomAnchor: NSLayoutConstraint?

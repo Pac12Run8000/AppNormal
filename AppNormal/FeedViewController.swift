@@ -104,10 +104,8 @@ class FeedViewController: UITableViewController {
         let asset: AVAsset = AVAsset(URL: url)
         let assetImgGenerate: AVAssetImageGenerator = AVAssetImageGenerator(asset: asset)
         assetImgGenerate.appliesPreferredTrackTransform = true
-        assetImgGenerate.requestedTimeToleranceAfter = kCMTimeZero;
-        assetImgGenerate.requestedTimeToleranceBefore = kCMTimeZero;
-        
-       
+        assetImgGenerate.requestedTimeToleranceAfter = kCMTimeZero
+        assetImgGenerate.requestedTimeToleranceBefore = kCMTimeZero
         
         do {
         let img: CGImageRef = try assetImgGenerate.copyCGImageAtTime(CMTimeMake(1, 60), actualTime: nil)
