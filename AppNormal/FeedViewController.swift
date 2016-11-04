@@ -73,14 +73,11 @@ class FeedViewController: UITableViewController {
         //        let uId = posts[indexPath.row].fromId
         
         let postDetailController = PostDetailController()
-//        postDetailController.feedViewController = self
+        postDetailController.feedViewController = self
         
         let myPosts = posts[indexPath.row]
         postDetailController.post = myPosts
         navigationController?.pushViewController(postDetailController, animated: true)
-        if let videoValue = myPosts.videoUrl {
-            print(videoValue)
-        }
     }
     
     

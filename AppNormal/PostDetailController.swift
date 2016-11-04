@@ -18,6 +18,8 @@ class PostDetailController: UIViewController {
         }
     }
     
+    var feedViewController: FeedViewController?
+    
     let dateTimeLabel:UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 12)
@@ -53,7 +55,7 @@ class PostDetailController: UIViewController {
         imageView.image = UIImage(named: "default")
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.backgroundColor = ChatMessageCell.orangeishColor
-        imageView.contentMode = .ScaleAspectFill
+        imageView.contentMode = .ScaleAspectFit
         return imageView
     }()
     
@@ -81,8 +83,6 @@ class PostDetailController: UIViewController {
         
         
     }
-//    var feedViewController: FeedViewController?
-    
     
     func displayImagesAndText() {
         if let userId = post?.fromId {
@@ -103,7 +103,11 @@ class PostDetailController: UIViewController {
         if let timestamp = post?.timestamp {
              dateTimeLabel.text = getDateFormat(timestamp)
         }
-        
+        if let videoUrl = post?.videoUrl {
+            let url:NSURL? = NSURL(string: videoUrl)
+            postImageView.image = feedViewController?.generateThumnail(url!, fromTime: Float64(1.22))
+            
+        }
        
     }
     
