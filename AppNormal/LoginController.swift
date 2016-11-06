@@ -104,6 +104,25 @@ class LoginController: UIViewController {
         return label
     }()
     
+    let loginActivityView: UIActivityIndicatorView = {
+        let lav = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+        lav.translatesAutoresizingMaskIntoConstraints = false
+        lav.hidesWhenStopped = true
+        return lav
+    }()
+    
+    let activityLabel:ActivityLabel = {
+        let label = ActivityLabel()
+        label.text = "Logging In ..."
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = UIColor.darkGrayColor()
+        label.hidden = true
+        label.layer.cornerRadius = 7
+        label.layer.masksToBounds = true
+        label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 17)
+        label.textColor = UIColor.whiteColor()
+        return label
+    }()
     
     
     func handleLogin() {
@@ -123,6 +142,8 @@ class LoginController: UIViewController {
     }
     
     func handleLoginRegister() {
+        activityLabel.hidden = false
+        loginActivityView.startAnimating()
         if (loginRegisterSegementedControl.selectedSegmentIndex == 0) {
             handleLogin()
         } else {
@@ -162,7 +183,10 @@ class LoginController: UIViewController {
         view.addSubview(inputsContainerView)
         view.addSubview(loginRegisterButton)
         view.addSubview(errorDisplayLabel)
+        view.addSubview(activityLabel)
+        view.addSubview(loginActivityView)
         
+        setUpActivityView()
         
         setupInputsContainerView()
         setUpLoginRegisterButton()
@@ -170,7 +194,21 @@ class LoginController: UIViewController {
         setUpLoginRegisterSegmentedControl()
         setUpErrorDisplayLabel()
         
+               
         }
+    
+    func setUpActivityView() {
+        
+        activityLabel.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
+        activityLabel.centerYAnchor.constraintEqualToAnchor(view.centerYAnchor).active = true
+        activityLabel.widthAnchor.constraintEqualToConstant(200).active = true
+        activityLabel.heightAnchor.constraintEqualToConstant(100).active = true
+        
+        loginActivityView.centerXAnchor.constraintEqualToAnchor(activityLabel.centerXAnchor).active = true
+        loginActivityView.bottomAnchor.constraintEqualToAnchor(activityLabel.bottomAnchor, constant: 15).active = true
+        loginActivityView.widthAnchor.constraintEqualToConstant(100).active = true
+        loginActivityView.heightAnchor.constraintEqualToConstant(100).active = true
+    }
     
     func setUpErrorDisplayLabel() {
         errorDisplayLabel.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
@@ -255,4 +293,10 @@ class LoginController: UIViewController {
 
    
 
+}
+
+class ActivityLabel: UILabel {
+    override func drawTextInRect(rect: CGRect) {
+        super.drawTextInRect(CGRect(x: 40, y: 15, width: 200, height: 0))
+    }
 }
