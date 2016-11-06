@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import AVFoundation
 
 class PostDetailController: UIViewController {
     var users = [User]()
@@ -19,6 +20,14 @@ class PostDetailController: UIViewController {
     }
     
     var feedViewController: FeedViewController?
+    
+//    let activityIndicatorView: UIActivityIndicatorView = {
+//        let aiv = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+//        aiv.translatesAutoresizingMaskIntoConstraints = false
+//        aiv.hidesWhenStopped = true
+//        
+//        return aiv
+//    }()
     
     let dateTimeLabel:UILabel = {
         let label = UILabel()
@@ -67,8 +76,36 @@ class PostDetailController: UIViewController {
         imageView.layer.masksToBounds = true
         imageView.layer.borderColor = ChatMessageCell.orangeishColor.CGColor
         imageView.layer.borderWidth = 2
+        
         return imageView
     }()
+    
+    lazy var playButton:UIButton = {
+        let button = UIButton(type: .System)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        let image = UIImage(named: "play_button_2")
+        button.tintColor = UIColor.whiteColor()
+        button.setImage(image, forState: .Normal)
+        button.hidden = false
+        button.addTarget(self, action: #selector(handlePlay), forControlEvents: .TouchUpInside)
+        return button
+    }()
+    
+    func handlePlay() {
+        
+        if let videoUrl = post?.videoUrl, url = NSURL(string: videoUrl) {
+            let player = AVPlayer(URL: url)
+            
+            let playerLayer = AVPlayerLayer(player: player)
+            playerLayer.frame = postImageView.bounds
+            postImageView.layer.addSublayer(playerLayer)
+            player.play()
+            
+            //activityIndicatorView.startAnimating()
+            playButton.hidden = true
+           
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -108,7 +145,7 @@ class PostDetailController: UIViewController {
             postImageView.image = feedViewController?.generateThumnail(url!, fromTime: Float64(1.22))
             
         }
-       
+       playButton.hidden = post?.videoUrl == nil
     }
     
     func getDateFormat(timestamp:NSNumber) -> String {
@@ -129,6 +166,20 @@ class PostDetailController: UIViewController {
         view.addSubview(postImageView)
         view.addSubview(dateTimeLabel)
         view.addSubview(profileImageView)
+        view.addSubview(playButton)
+//        view.addSubview(activityIndicatorView)
+//        
+//        activityIndicatorView.centerXAnchor.constraintEqualToAnchor(postImageView.centerXAnchor).active = true
+//        activityIndicatorView.centerYAnchor.constraintEqualToAnchor(postImageView.centerYAnchor).active = true
+//        activityIndicatorView.widthAnchor.constraintEqualToConstant(65).active = true
+//        activityIndicatorView.heightAnchor.constraintEqualToConstant(65).active = true
+
+        
+        
+        playButton.centerXAnchor.constraintEqualToAnchor(postImageView.centerXAnchor).active = true
+        playButton.centerYAnchor.constraintEqualToAnchor(postImageView.centerYAnchor).active = true
+        playButton.widthAnchor.constraintEqualToConstant(65).active = true
+        playButton.heightAnchor.constraintEqualToConstant(50).active = true
         
         profileImageView.leftAnchor.constraintEqualToAnchor(view.leftAnchor, constant: 20).active = true
         profileImageView.bottomAnchor.constraintEqualToAnchor(labelView.topAnchor, constant: 20).active = true
