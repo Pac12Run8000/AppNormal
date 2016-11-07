@@ -143,6 +143,10 @@ class LoginController: UIViewController {
                     switch (errorCode) {
                     case 17011:
                         errorText = "This user does not exist."
+                        break
+                    case 17008:
+                        errorText = "Enter a valid email."
+                        break
                         default:
                         errorText = "Login Unsuccessful ..."
                     }

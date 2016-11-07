@@ -17,13 +17,54 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
             return
         }
         
+        if name.isEmpty {
+            errorDisplayLabel.text = "Enter a username"
+            return
+        }
+        
+        if email.isEmpty {
+            errorDisplayLabel.text = "Enter an email address"
+            return
+        }
+        
+        if password.isEmpty {
+            errorDisplayLabel.text = "enter a password"
+            return
+        }
+        self.activityLabel.hidden = false
+        self.loginActivityView.startAnimating()
+        
+        
         FIRAuth.auth()?.createUserWithEmail(email, password: password, completion: { (user: FIRUser?, error) in
+            
             if (error != nil) {
                 print(error)
+                if let errorCode = error?.code {
+                    var errorText:String?
+                    switch (errorCode) {
+                    case 17011:
+                        errorText = "This user does not exist."
+                        break
+                    case 17008:
+                        errorText = "Enter a valid email"
+                        break
+                    default:
+                        errorText = "Login Unsuccessful ..."
+                    }
+                    self.errorDisplayLabel.text = errorText
+                
+                }
+                self.activityLabel.hidden = true
+                self.loginActivityView.stopAnimating()
+                
                 return
             }
             
             guard let uid = user?.uid else {
+                
+                self.activityLabel.hidden = true
+                self.loginActivityView.stopAnimating()
+                
                 return
             }
             
@@ -36,6 +77,10 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
                 storageRef.putData(uploadData, metadata: nil, completion: { (metaData, error) in
                     if (error != nil) {
                         print("Upload Image ERROR:", error)
+                        
+                        self.activityLabel.hidden = true
+                        self.loginActivityView.stopAnimating()
+                        
                         return
                     }
                     if let profileImageUrl = metaData?.downloadURL()?.absoluteString {
@@ -56,6 +101,10 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
         usersReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
             if (err != nil) {
                 print(err)
+                
+                self.activityLabel.hidden = true
+                self.loginActivityView.stopAnimating()
+                
                 return
             }
             let user = User()
