@@ -157,8 +157,8 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
     
     
     func handleUploadTap() {
-        if ((descriptionTextField.text?.isEmpty) != false) {
-            instructionLabel.text = "Add message for photo\r\nClick box below to add photo.\r\nor video"
+        if descriptionTextField.text!.isEmpty {
+            instructionLabel.text = "Add message for photo"
             
         }
         else {
