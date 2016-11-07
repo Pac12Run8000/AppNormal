@@ -11,6 +11,21 @@ import Firebase
 
 extension LoginController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
+    func getErrorForText(error: NSError) -> String {
+        let errorCode = error.code
+            var errorText:String?
+            switch (errorCode) {
+            case 17011:
+                errorText = "This user does not exist."
+                break
+            case 17008:
+                errorText = "Enter a valid email"
+                break
+            default:
+                errorText = "Login Unsuccessful ..."
+            }
+            return errorText!
+    }
     
     func handleRegister() {
         guard let email = emailTextField.text, password = passwordTextField.text, name = nameTextField.text else {
@@ -39,21 +54,9 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
             
             if (error != nil) {
                 print(error)
-                if let errorCode = error?.code {
-                    var errorText:String?
-                    switch (errorCode) {
-                    case 17011:
-                        errorText = "This user does not exist."
-                        break
-                    case 17008:
-                        errorText = "Enter a valid email"
-                        break
-                    default:
-                        errorText = "Login Unsuccessful ..."
-                    }
-                    self.errorDisplayLabel.text = errorText
+                self.errorDisplayLabel.text = self.getErrorForText(error!)
                 
-                }
+                
                 self.activityLabel.hidden = true
                 self.loginActivityView.stopAnimating()
                 

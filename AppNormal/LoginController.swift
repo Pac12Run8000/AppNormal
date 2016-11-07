@@ -138,21 +138,8 @@ class LoginController: UIViewController {
         FIRAuth.auth()?.signInWithEmail(email, password: password, completion: { (user, error) in
             if (error != nil) {
                 print(error)
-                if let errorCode = error?.code {
-                    var errorText:String?
-                    switch (errorCode) {
-                    case 17011:
-                        errorText = "This user does not exist."
-                        break
-                    case 17008:
-                        errorText = "Enter a valid email."
-                        break
-                        default:
-                        errorText = "Login Unsuccessful ..."
-                    }
-                    
-                    self.errorDisplayLabel.text = errorText
-                }
+                self.errorDisplayLabel.text = self.getErrorForText(error!)
+
                 self.activityLabel.hidden = true
                 self.loginActivityView.stopAnimating()
                 
