@@ -96,11 +96,14 @@ class LoginController: UIViewController {
     
     let errorDisplayLabel:UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Avenir-Book", size: 18)
+        label.font = UIFont(name: "Avenir-Book", size: 12)
         label.textColor = UIColor(red: 1.00, green: 0.53, blue: 0.14, alpha: 1.0)
         label.backgroundColor = UIColor.clearColor()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .Center
+        label.layer.borderColor = UIColor.redColor().CGColor
+        label.numberOfLines = 3
+        //label.text = "This is a test!!"
         return label
     }()
     
@@ -129,21 +132,40 @@ class LoginController: UIViewController {
         guard let email = emailTextField.text, password = passwordTextField.text else {
             return
         }
+        activityLabel.hidden = false
+        loginActivityView.startAnimating()
         
         FIRAuth.auth()?.signInWithEmail(email, password: password, completion: { (user, error) in
             if (error != nil) {
                 print(error)
+                if let errorCode = error?.code {
+                    var errorText:String?
+                    switch (errorCode) {
+                    case 17011:
+                        errorText = "This user does not exist."
+                        default:
+                        errorText = "Login Unsuccessful ..."
+                    }
+                    
+                    self.errorDisplayLabel.text = errorText
+                }
+                self.activityLabel.hidden = true
+                self.loginActivityView.stopAnimating()
+                
                 return
+                
             }
+            
             self.messagesController?.fetchUserAndSetupNavBarTitle()
             self.dismissViewControllerAnimated(true, completion: nil)
         })
 
     }
     
+   
+    
     func handleLoginRegister() {
-        activityLabel.hidden = false
-        loginActivityView.startAnimating()
+       
         if (loginRegisterSegementedControl.selectedSegmentIndex == 0) {
             handleLogin()
         } else {
@@ -194,7 +216,7 @@ class LoginController: UIViewController {
         setUpLoginRegisterSegmentedControl()
         setUpErrorDisplayLabel()
         
-               
+        
         }
     
     func setUpActivityView() {
