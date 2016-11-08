@@ -21,14 +21,6 @@ class PostDetailController: UIViewController {
     
     var feedViewController: FeedViewController?
     
-//    let activityIndicatorView: UIActivityIndicatorView = {
-//        let aiv = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
-//        aiv.translatesAutoresizingMaskIntoConstraints = false
-//        aiv.hidesWhenStopped = true
-//        
-//        return aiv
-//    }()
-    
     let dateTimeLabel:UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 12)
@@ -53,9 +45,9 @@ class PostDetailController: UIViewController {
         
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
        
-
+        label.contentInset = UIEdgeInsetsMake(-50.0,0.0,0,0.0)
         label.userInteractionEnabled = false
-
+//        label.backgroundColor = UIColor.grayColor()
         return label
     }()
     
@@ -101,7 +93,6 @@ class PostDetailController: UIViewController {
             postImageView.layer.addSublayer(playerLayer)
             player.play()
             
-            //activityIndicatorView.startAnimating()
             playButton.hidden = true
            
         }
@@ -140,10 +131,8 @@ class PostDetailController: UIViewController {
         if let timestamp = post?.timestamp {
              dateTimeLabel.text = getDateFormat(timestamp)
         }
-        if let videoUrl = post?.videoUrl {
-            let url:NSURL? = NSURL(string: videoUrl)
-            postImageView.image = feedViewController?.generateThumnail(url!, fromTime: Float64(1.22))
-            
+        if let videoUrl = post?.videoUrl, url = NSURL(string:videoUrl) {
+            postImageView.image = feedViewController?.generateThumnail(url, fromTime: Float64(1.22))
         }
        playButton.hidden = post?.videoUrl == nil
     }
@@ -167,12 +156,6 @@ class PostDetailController: UIViewController {
         view.addSubview(dateTimeLabel)
         view.addSubview(profileImageView)
         view.addSubview(playButton)
-//        view.addSubview(activityIndicatorView)
-//        
-//        activityIndicatorView.centerXAnchor.constraintEqualToAnchor(postImageView.centerXAnchor).active = true
-//        activityIndicatorView.centerYAnchor.constraintEqualToAnchor(postImageView.centerYAnchor).active = true
-//        activityIndicatorView.widthAnchor.constraintEqualToConstant(65).active = true
-//        activityIndicatorView.heightAnchor.constraintEqualToConstant(65).active = true
 
         
         
@@ -208,23 +191,6 @@ class PostDetailController: UIViewController {
         postImageView.topAnchor.constraintEqualToAnchor(dateTimeLabel.bottomAnchor).active = true
         
         
-        
-//        labelView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
-//        labelView.centerYAnchor.constraintEqualToAnchor(view.centerYAnchor).active = true
-//        labelView.widthAnchor.constraintEqualToAnchor(view.widthAnchor).active = true
-//
-//        labelView.heightAnchor.constraintEqualToConstant(150).active = true
-//        
-//        commentLabel.centerXAnchor.constraintEqualToAnchor(labelView.centerXAnchor).active = true
-//        commentLabel.centerYAnchor.constraintEqualToAnchor(labelView.centerYAnchor).active = true
-//        commentLabel.widthAnchor.constraintEqualToAnchor(labelView.widthAnchor, constant: -15).active = true
-//        commentLabel.heightAnchor.constraintEqualToAnchor(labelView.heightAnchor).active = true
-//        
-//        
-//        postImageView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
-//        postImageView.bottomAnchor.constraintEqualToAnchor(labelView.topAnchor, constant: -1).active = true
-//        postImageView.widthAnchor.constraintEqualToAnchor(view.widthAnchor).active = true
-//        postImageView.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 65).active = true
     }
     
 
