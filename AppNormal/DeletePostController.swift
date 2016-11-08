@@ -8,6 +8,8 @@
 
 import UIKit
 import Firebase
+import AVFoundation
+import MobileCoreServices
 
 class DeletePostController: UITableViewController {
     
@@ -72,6 +74,7 @@ class DeletePostController: UITableViewController {
                         if let profileImageUrl = dictionary["profileImageUrl"] as? String {
                             cell.profileImageView.loadImageUsingCacheWithUrlString(profileImageUrl)
                         }
+                        
                     }
                     }, withCancelBlock: nil)
             
@@ -86,9 +89,47 @@ class DeletePostController: UITableViewController {
         if let postImageView = post.postImageUrl {
             cell.postImageView.loadImageUsingCacheWithUrlString(postImageView)
         }
+        if let videoUrl = post.videoUrl, url = NSURL(string: videoUrl) {
+            cell.postImageView.image = generateThumbNail(url, fromTime:Float64(1.22))
+        }
         
         return cell
     }
+    
+    func generateThumbNail(url:NSURL, fromTime:Float64) -> UIImage? {
+        let asset:AVAsset = AVAsset(URL: url)
+        let assetImageGenerate:AVAssetImageGenerator = AVAssetImageGenerator(asset: asset)
+        assetImageGenerate.appliesPreferredTrackTransform = true
+        assetImageGenerate.requestedTimeToleranceAfter = kCMTimeZero
+        assetImageGenerate.requestedTimeToleranceBefore = kCMTimeZero
+        
+        do {
+            let img: CGImageRef = try assetImageGenerate.copyCGImageAtTime(CMTimeMake(1, 60), actualTime: nil)
+            let frameImg:UIImage = UIImage(CGImage: img)
+            return frameImg
+        } catch let err {
+            print(err)
+        }
+        
+        return nil
+    }
+    
+//    func generateThumnail(url : NSURL, fromTime:Float64) -> UIImage? {
+//        let asset: AVAsset = AVAsset(URL: url)
+//        let assetImgGenerate: AVAssetImageGenerator = AVAssetImageGenerator(asset: asset)
+//        assetImgGenerate.appliesPreferredTrackTransform = true
+//        assetImgGenerate.requestedTimeToleranceAfter = kCMTimeZero
+//        assetImgGenerate.requestedTimeToleranceBefore = kCMTimeZero
+//        
+//        do {
+//            let img: CGImageRef = try assetImgGenerate.copyCGImageAtTime(CMTimeMake(1, 60), actualTime: nil)
+//            let frameImg:UIImage = UIImage(CGImage: img)
+//            return frameImg
+//        } catch let err {
+//            print(err)
+//        }
+//        return nil
+//    }
     
     func getDateFormat(timestamp:NSNumber) -> String {
         
