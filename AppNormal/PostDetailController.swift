@@ -83,18 +83,38 @@ class PostDetailController: UIViewController {
         return button
     }()
     
+
+    let activityIndicatorView: UIActivityIndicatorView = {
+        let aiv = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+        aiv.translatesAutoresizingMaskIntoConstraints = false
+        aiv.hidesWhenStopped = true
+        //        aiv.startAnimating()
+        return aiv
+    }()
+    
+    let videoActivityIndicatorView: UIActivityIndicatorView = {
+        let view = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.hidesWhenStopped = true
+        return view
+    }()
+    
+    var playeLayer: AVPlayerLayer?
+    var player: AVPlayer?
+
+    
     func handlePlay() {
         
         if let videoUrl = post?.videoUrl, url = NSURL(string: videoUrl) {
-            let player = AVPlayer(URL: url)
-            
-            let playerLayer = AVPlayerLayer(player: player)
-            playerLayer.frame = postImageView.bounds
-            postImageView.layer.addSublayer(playerLayer)
-            player.play()
+            player = AVPlayer(URL: url)
+            playeLayer = AVPlayerLayer(player: player)
+            playeLayer?.frame = postImageView.bounds
+            postImageView.layer.addSublayer(playeLayer!)
+
             
             playButton.hidden = true
-           
+            player?.play()
+            
         }
     }
 
@@ -156,6 +176,12 @@ class PostDetailController: UIViewController {
         view.addSubview(dateTimeLabel)
         view.addSubview(profileImageView)
         view.addSubview(playButton)
+        view.addSubview(videoActivityIndicatorView)
+        
+        videoActivityIndicatorView.centerXAnchor.constraintEqualToAnchor(postImageView.centerXAnchor).active = true
+        videoActivityIndicatorView.centerYAnchor.constraintEqualToAnchor(postImageView.centerYAnchor).active = true
+        videoActivityIndicatorView.widthAnchor.constraintEqualToConstant(60).active = true
+        videoActivityIndicatorView.heightAnchor.constraintEqualToConstant(60).active = true
 
         
         
