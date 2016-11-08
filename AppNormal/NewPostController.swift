@@ -51,6 +51,46 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         return txtField
     }()
     
+//    let activityLabel:ActivityLabel = {
+//        let label = ActivityLabel()
+//        label.text = "Logging In ..."
+//        label.translatesAutoresizingMaskIntoConstraints = false
+//        label.backgroundColor = UIColor.darkGrayColor()
+//        label.hidden = true
+//        label.layer.cornerRadius = 7
+//        label.layer.masksToBounds = true
+//        label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 17)
+//        label.textColor = UIColor.whiteColor()
+//        return label
+//    }()
+    
+//    let loginActivityView: UIActivityIndicatorView = {
+//        let lav = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+//        lav.translatesAutoresizingMaskIntoConstraints = false
+//        lav.hidesWhenStopped = true
+//        return lav
+//    }()
+    
+    let uploadImageActivityView: UIActivityIndicatorView = {
+        let uav = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+        uav.translatesAutoresizingMaskIntoConstraints = false
+        uav.backgroundColor = UIColor.darkGrayColor()
+        uav.layer.cornerRadius = 15
+        uav.layer.masksToBounds = true
+        return uav
+    }()
+    
+    let activityLabel:UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 17)
+        label.text = "Uploading image ..."
+        label.textColor = UIColor.whiteColor()
+        
+        label.textAlignment = .Center
+        return label
+    }()
+    
    
 
     override func viewDidLoad() {
@@ -109,7 +149,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
     }
     
     func handleSavePost() {
-       
+       self.uploadImageActivityView.startAnimating()
         
         let fromId = FIRAuth.auth()!.currentUser!.uid
         let timestamp: NSNumber = Int(NSDate().timeIntervalSince1970)
@@ -128,8 +168,11 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
             storageRef.putData(uploadData, metadata: nil, completion: { (metadata, error) in
                 if (error != nil) {
                     print("Error:", error)
+                    self.uploadImageActivityView.stopAnimating()
                     return
                 }
+                self.uploadImageActivityView.startAnimating()
+                
                 if let postImageUrl = metadata?.downloadURL()?.absoluteString {
                     let values:[String:AnyObject] = ["fromId": fromId, "timestamp": timestamp, "comment": comment, "postImageUrl":postImageUrl]
                     self.enterPostIntoDataBase(values)
@@ -213,10 +256,12 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         uploadTask.observeStatus(.Progress) { (snapshot) in
             if let completedUnitCount = snapshot.progress?.completedUnitCount {
                 self.navigationItem.title = String(completedUnitCount)
+                self.uploadImageActivityView.startAnimating()
             }
             
         uploadTask.observeStatus(.Success, handler: { (snapshot) in
-            self.navigationItem.title = "Video ready to be saved"
+            //self.navigationItem.title = "Video ready to be saved"
+            self.dismissViewControllerAnimated(true, completion: nil)
         })
            
         }
@@ -285,6 +330,19 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
         view.addSubview(descriptionTextField)
         view.addSubview(uploadImage)
         view.addSubview(instructionLabel)
+        view.addSubview(uploadImageActivityView)
+        uploadImageActivityView.addSubview(activityLabel)
+        
+        activityLabel.centerXAnchor.constraintEqualToAnchor(uploadImageActivityView.centerXAnchor).active = true
+        activityLabel.bottomAnchor.constraintEqualToAnchor(uploadImageActivityView.bottomAnchor).active = true
+        activityLabel.widthAnchor.constraintEqualToAnchor(uploadImageActivityView.widthAnchor).active = true
+        activityLabel.heightAnchor.constraintEqualToConstant(75).active = true
+        
+        
+        uploadImageActivityView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
+        uploadImageActivityView.centerYAnchor.constraintEqualToAnchor(view.centerYAnchor).active = true
+        uploadImageActivityView.widthAnchor.constraintEqualToConstant(175).active = true
+        uploadImageActivityView.heightAnchor.constraintEqualToConstant(175).active = true
         
         
         
