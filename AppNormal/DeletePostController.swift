@@ -15,7 +15,7 @@ class DeletePostController: UITableViewController {
     
     let cellId = "cellId"
     
-    var posts = [Post]()
+    
    
 
     override func viewDidLoad() {
@@ -25,8 +25,38 @@ class DeletePostController: UITableViewController {
         fetchPostsForDeletion()
         
         tableView.registerClass(PostCellForDelete.self, forCellReuseIdentifier: cellId)
+        tableView.allowsMultipleSelectionDuringEditing = true
     }
     
+    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        
+        let post = self.posts[indexPath.row]
+        //print(post.postId)
+        guard let postId = post.postId else {
+            return
+        }
+        
+            let ref = FIRDatabase.database().reference().child("feed").child(postId)
+            ref.removeValueWithCompletionBlock { (error, reff) in
+                if (error != nil) {
+                    print("error:", error)
+                    return
+                }
+                
+                
+              
+//                self.posts.re
+        }
+    
+        
+    }
+    
+    var posts = [Post]()
+    var postsDictionary = [String: Post]()
     
     func fetchPostsForDeletion() {
         guard let uId = FIRAuth.auth()?.currentUser?.uid else {
@@ -37,10 +67,19 @@ class DeletePostController: UITableViewController {
             
             if let dictionary = snapshot.value as? [String:AnyObject] {
                 let post = Post(dictionary: dictionary)
+                post.postId = snapshot.key
                 post.setValuesForKeysWithDictionary(dictionary)
+//                if let fromId = post.fromId {
+//                    self.postsDictionary[fromId] = post
+//                }
                 if (uId == dictionary["fromId"] as? String) {
                     self.posts.append(post)
+//                    if let postId = post.fromId {
+//                        self.postsDictionary[postId] = post
+//                        self.posts = Array(self.postsDictionary.values)
+//                    }
                 }
+               
                
                 
                 dispatch_async(dispatch_get_main_queue(), { 
