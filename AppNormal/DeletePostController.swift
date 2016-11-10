@@ -14,8 +14,6 @@ import MobileCoreServices
 class DeletePostController: UITableViewController {
     
     let cellId = "cellId"
-    
-    
    
 
     override func viewDidLoad() {
@@ -35,7 +33,6 @@ class DeletePostController: UITableViewController {
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         
         let post = self.posts[indexPath.row]
-        //print(post.postId)
         guard let postId = post.postId else {
             return
         }
@@ -46,13 +43,9 @@ class DeletePostController: UITableViewController {
                     print("error:", error)
                     return
                 }
-                
-                
-              
-//                self.posts.re
+                self.posts.removeAtIndex(indexPath.row)
+                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
         }
-    
-        
     }
     
     var posts = [Post]()
@@ -72,6 +65,7 @@ class DeletePostController: UITableViewController {
 //                if let fromId = post.fromId {
 //                    self.postsDictionary[fromId] = post
 //                }
+                //Ep 10 Hows to Group messages per user
                 if (uId == dictionary["fromId"] as? String) {
                     self.posts.append(post)
 //                    if let postId = post.fromId {
