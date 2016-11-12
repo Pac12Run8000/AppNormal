@@ -18,6 +18,15 @@ class FeedViewController: UITableViewController {
     
     var posts = [Post]()
     var postsDictionary = [String:Post]()
+    
+//    lazy var refreshCntrl: UIRefreshControl = {
+//        let ctrl = UIRefreshControl()
+//        ctrl.translatesAutoresizingMaskIntoConstraints = false
+//        ctrl.tintColor = UIColor.whiteColor()
+//        ctrl.addTarget(self, action: #selector(reloadTableDataWhenPulledDown), forControlEvents: UIControlEvents.ValueChanged)
+//        return ctrl
+//    }()
+    
 
 
     override func viewDidLoad() {
@@ -25,12 +34,27 @@ class FeedViewController: UITableViewController {
         setupNavigationItemsAndBarButtons()
         checkIfUserLoggedInAndSetUpNavbarTitle()
         
+        
         fetchPost()
+        
+        refreshtableViewFunctionality()
+        
+        
         tableView.registerClass(PostCell.self, forCellReuseIdentifier: cellId)
         tableView.separatorColor = ChatMessageCell.orangeishColor
         tableView.backgroundColor = ChatMessageCell.lightBrownishColor
-        
-        
+    }
+    
+    func refreshtableViewFunctionality() {
+        refreshControl = UIRefreshControl()
+        refreshControl?.tintColor = UIColor.whiteColor()
+        refreshControl?.addTarget(self, action: #selector(reloadTableDataWhenPulledDown), forControlEvents: UIControlEvents.ValueChanged)
+    }
+
+    
+    func reloadTableDataWhenPulledDown() {
+        posts.removeAll()
+        fetchPost()
     }
     
     func fetchPost() {
@@ -55,6 +79,10 @@ class FeedViewController: UITableViewController {
                 
                 dispatch_async(dispatch_get_main_queue(), { 
                      self.tableView.reloadData()
+                    
+                    if (self.refreshControl?.refreshing != nil) {
+                        self.refreshControl?.endRefreshing()
+                    }
                 })
                
             }
