@@ -45,7 +45,7 @@ class PostDetailController: UIViewController {
         
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
        
-        label.contentInset = UIEdgeInsetsMake(-50.0,0.0,0,0.0)
+        label.contentInset = UIEdgeInsetsMake(-40.0,0.0,0,0.0)
         label.userInteractionEnabled = false
 //        label.backgroundColor = UIColor.grayColor()
         return label
@@ -99,6 +99,8 @@ class PostDetailController: UIViewController {
         return view
     }()
     
+    
+    
     var playeLayer: AVPlayerLayer?
     var player: AVPlayer?
 
@@ -124,12 +126,19 @@ class PostDetailController: UIViewController {
         view.backgroundColor = UIColor.whiteColor()
         commentField.text = post?.comment
         
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Action, target: self, action: #selector(sharePost))
+        
+        
         displayImagesAndText()
         
         
         mainContainer()
         
         
+    }
+    
+    func sharePost() {
+    
     }
     
     func displayImagesAndText() {
@@ -177,6 +186,7 @@ class PostDetailController: UIViewController {
         view.addSubview(profileImageView)
         view.addSubview(playButton)
         view.addSubview(videoActivityIndicatorView)
+        
         
         videoActivityIndicatorView.centerXAnchor.constraintEqualToAnchor(postImageView.centerXAnchor).active = true
         videoActivityIndicatorView.centerYAnchor.constraintEqualToAnchor(postImageView.centerYAnchor).active = true
