@@ -113,18 +113,11 @@ class PostDetailController: UIViewController {
     
     
     func flagContent() {
-        
+        let flagPost = post
         let flagcontentViewController = FlagContentViewController()
+        flagcontentViewController.post = flagPost
         let navController = UINavigationController(rootViewController: flagcontentViewController)
         presentViewController(navController, animated: true, completion: nil)
-//        print(post?.postId)
-        
-        
-//        func handleAddPostToFeed() {
-//            let newPostController = NewPostController()
-//            let navController = UINavigationController(rootViewController: newPostController)
-//            presentViewController(navController, animated: true, completion: nil)
-//        }
     }
 
     
