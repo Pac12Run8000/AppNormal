@@ -11,7 +11,6 @@ import Firebase
 import AVFoundation
 
 class PostDetailController: UIViewController {
-    var users = [User]()
     
     var post: Post? {
         didSet {
@@ -99,10 +98,34 @@ class PostDetailController: UIViewController {
         return view
     }()
     
+    lazy var flagButton:UIButton = {
+        let button = UIButton(type: UIButtonType.System)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("[Flag]", forState: .Normal)
+        button.setTitleColor(ChatMessageCell.orangeishColor, forState: UIControlState.Normal)
+        button.addTarget(self, action: #selector(flagContent), forControlEvents: .TouchUpInside)
+        return button
+    }()
     
     
     var playeLayer: AVPlayerLayer?
     var player: AVPlayer?
+    
+    
+    func flagContent() {
+        
+        let flagcontentViewController = FlagContentViewController()
+        let navController = UINavigationController(rootViewController: flagcontentViewController)
+        presentViewController(navController, animated: true, completion: nil)
+//        print(post?.postId)
+        
+        
+//        func handleAddPostToFeed() {
+//            let newPostController = NewPostController()
+//            let navController = UINavigationController(rootViewController: newPostController)
+//            presentViewController(navController, animated: true, completion: nil)
+//        }
+    }
 
     
     func handlePlay() {
@@ -127,6 +150,7 @@ class PostDetailController: UIViewController {
         commentField.text = post?.comment
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Action, target: self, action: #selector(sharePost))
+        navigationItem.rightBarButtonItem?.tintColor = UIColor.blackColor()
         
         
         displayImagesAndText()
@@ -186,6 +210,12 @@ class PostDetailController: UIViewController {
         view.addSubview(profileImageView)
         view.addSubview(playButton)
         view.addSubview(videoActivityIndicatorView)
+        view.addSubview(flagButton)
+        
+        flagButton.rightAnchor.constraintEqualToAnchor(view.rightAnchor).active = true
+        flagButton.topAnchor.constraintEqualToAnchor(dateTimeLabel.topAnchor).active = true
+        flagButton.widthAnchor.constraintEqualToConstant(100).active = true
+        flagButton.heightAnchor.constraintEqualToConstant(30).active = true
         
         
         videoActivityIndicatorView.centerXAnchor.constraintEqualToAnchor(postImageView.centerXAnchor).active = true

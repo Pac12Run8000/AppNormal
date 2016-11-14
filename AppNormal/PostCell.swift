@@ -117,7 +117,6 @@ class PostCell: UITableViewCell {
         imgView.image = UIImage(named: "default")
         imgView.translatesAutoresizingMaskIntoConstraints = false
         imgView.layer.masksToBounds = true
-        
         imgView.contentMode = .ScaleAspectFill
         return imgView
     }()
@@ -137,6 +136,7 @@ class PostCell: UITableViewCell {
         addSubview(dateTimeLabel)
         
         addSubview(userNamelabel)
+        
         
         userNamelabel.leftAnchor.constraintEqualToAnchor(userIcon.rightAnchor, constant: 10).active = true
         userNamelabel.bottomAnchor.constraintEqualToAnchor(commentLabel.topAnchor, constant: 0).active = true
