@@ -212,7 +212,40 @@ class FlagContentViewController: UIViewController {
     }
     
     func saveFlaggedComment() {
+        
+        saveFlagInfo()
         dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+//    private func enterPostIntoDataBase(values: [String:AnyObject]) {
+//        
+//        let ref = FIRDatabase.database().reference().child("feed")
+//        let childRef = ref.childByAutoId()
+//        childRef.updateChildValues(values) { (error, ref) in
+//            if (error != nil) {
+//                print(error)
+//                return
+//            }
+//            print("Data Saved successfully")
+//        }
+//    }
+    
+    func saveFlagInfo() {
+        guard let uId = FIRAuth.auth()?.currentUser?.uid, flaggedUserId = post?.fromId, flaggedPostId = post?.postId, flagComplaint = complaintTextField.text else {
+            return
+        }
+        let values:[String:AnyObject] = ["uId": uId, "flaggedUserId": flaggedUserId, "flaggedPostId": flaggedPostId, "flagComplaint": flagComplaint]
+        
+        let ref = FIRDatabase.database().reference().child("flags")
+        let childRef = ref.childByAutoId()
+        childRef.updateChildValues(values) { (error, ref) in
+            if (error != nil) {
+                print(error)
+                return
+            }
+            print("Flag Saved!!")
+        }
+        
     }
     
     func closeController() {
