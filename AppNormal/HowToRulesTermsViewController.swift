@@ -7,8 +7,12 @@
 //
 
 import UIKit
+import Firebase
 
 class HowToRulesTermsViewController: UIViewController {
+    
+    let user = User()
+    
     
     lazy var ruleSegmentController: UISegmentedControl = {
         let control = UISegmentedControl(items: ["Rules","Termes of Service"])
@@ -20,12 +24,31 @@ class HowToRulesTermsViewController: UIViewController {
         return control
     }()
     
+    let adminButton:UIButton = {
+        let button = UIButton(type: .System)
+        button.hidden = true
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = ChatMessageCell.orangeishColor
+        button.layer.cornerRadius = 30
+        button.layer.masksToBounds = true
+        button.layer.borderWidth = 2
+        button.layer.borderColor = ChatMessageCell.lightBrownishColor.CGColor
+        button.setTitle("Admin", forState: .Normal)
+        button.tintColor = UIColor.blackColor()
+        return button
+    }()
+    
     let contentContainerView:UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        //view.backgroundColor = UIColor.whiteColor()
+//        view.backgroundColor = UIColor.whiteColor()
         return view
     }()
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        isUserAnAdmin()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,15 +56,46 @@ class HowToRulesTermsViewController: UIViewController {
         view.backgroundColor = ChatMessageCell.browishColor
         navigationItem.title = "Terms of Use"
         
+        
         setUpSegmentedControl()
         setUpContainerView()
     }
     
+    func isUserAnAdmin() {
+        
+        guard let uId = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
+        let ref = FIRDatabase.database().reference().child("users").child(uId)
+        ref.observeSingleEventOfType(.Value, withBlock: { (snapshot) in
+            if let dictionary = snapshot.value as? [String: AnyObject] {
+                let user = User()
+                user.setValuesForKeysWithDictionary(dictionary)
+                self.isAdminButtonVisible(user)
+            }
+            }, withCancelBlock: nil)
+    }
+    
+    func isAdminButtonVisible(obj: User) {
+        
+        if (obj.email == "Sosagrover1987@gmail.com") {
+            adminButton.hidden = false
+        } else {
+            adminButton.hidden = true
+        }
+    }
+    
     func setUpContainerView() {
         view.addSubview(contentContainerView)
+        view.addSubview(adminButton)
+        
+        adminButton.topAnchor.constraintEqualToAnchor(ruleSegmentController.bottomAnchor, constant: 20).active = true
+        adminButton.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
+        adminButton.widthAnchor.constraintEqualToConstant(60).active = true
+        adminButton.heightAnchor.constraintEqualToConstant(60).active = true
         
         contentContainerView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
-        contentContainerView.topAnchor.constraintEqualToAnchor(ruleSegmentController.bottomAnchor, constant: 20).active = true
+        contentContainerView.topAnchor.constraintEqualToAnchor(adminButton.bottomAnchor, constant: 20).active = true
         contentContainerView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor, constant: -65).active = true
         contentContainerView.widthAnchor.constraintEqualToAnchor(view.widthAnchor).active = true
     }
