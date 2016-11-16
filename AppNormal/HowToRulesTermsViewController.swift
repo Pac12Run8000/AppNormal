@@ -24,7 +24,7 @@ class HowToRulesTermsViewController: UIViewController {
         return control
     }()
     
-    let adminButton:UIButton = {
+    lazy var adminButton:UIButton = {
         let button = UIButton(type: .System)
         button.hidden = true
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -35,8 +35,15 @@ class HowToRulesTermsViewController: UIViewController {
         button.layer.borderColor = ChatMessageCell.lightBrownishColor.CGColor
         button.setTitle("Admin", forState: .Normal)
         button.tintColor = UIColor.blackColor()
+        button.addTarget(self, action: #selector(getFlaggedContent), forControlEvents: UIControlEvents.TouchUpInside)
         return button
     }()
+    
+    func getFlaggedContent() {
+        let flaggedcontentAdmin = FlaggedContentAdminViewController()
+        
+        navigationController?.pushViewController(flaggedcontentAdmin, animated: true)
+    }
     
     let contentContainerView:UIView = {
         let view = UIView()

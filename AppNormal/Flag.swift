@@ -14,6 +14,7 @@ class Flag: NSObject {
     var flaggedUserId: String?
     var flaggedPostId: String?
     var flagComplaint: String?
+    var flagId: String?
     
     init(dictionary: [String:AnyObject]) {
         super.init()
@@ -22,6 +23,7 @@ class Flag: NSObject {
         flaggedUserId = dictionary["flaggedUserId"] as? String
         flaggedPostId = dictionary["flaggedPostId"] as? String
         flagComplaint = dictionary["flagComplaint"] as? String
+        flagId = dictionary["flagId"] as? String
     }
 }
 
