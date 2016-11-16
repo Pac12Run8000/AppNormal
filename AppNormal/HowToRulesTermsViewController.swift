@@ -15,7 +15,7 @@ class HowToRulesTermsViewController: UIViewController {
     
     
     lazy var ruleSegmentController: UISegmentedControl = {
-        let control = UISegmentedControl(items: ["Rules","Termes of Service"])
+        let control = UISegmentedControl(items: ["Rules","Terms of Service"])
         control.translatesAutoresizingMaskIntoConstraints = false
         control.selectedSegmentIndex = 0
         control.tintColor = ChatMessageCell.orangeishColor
