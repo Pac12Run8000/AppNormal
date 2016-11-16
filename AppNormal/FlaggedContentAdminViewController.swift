@@ -24,7 +24,7 @@ class FlaggedContentAdminViewController: UITableViewController {
         
         tableView.registerClass(FlagCell.self, forCellReuseIdentifier: cellId)
         tableView.separatorColor = ChatMessageCell.orangeishColor
-        
+        tableView.allowsMultipleSelectionDuringEditing = true
         
     }
     
@@ -47,6 +47,40 @@ class FlaggedContentAdminViewController: UITableViewController {
                 
             }
             }, withCancelBlock: nil)
+    }
+    
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        //print(indexPath.row)
+        
+        let flag = self.flags[indexPath.row]
+        guard let flagId = flag.flagId, postId = flag.flaggedPostId else {
+            return
+        }
+        
+        let postRef = FIRDatabase.database().reference().child("feed").child(postId)
+        postRef.removeValueWithCompletionBlock { (err, refer) in
+            if (err != nil) {
+                print("Problem with post removal: ", err)
+                return
+            }
+            print("Post has been removed!!")
+        }
+        
+        
+        let flagRef = FIRDatabase.database().reference().child("flags").child(flagId)
+        flagRef.removeValueWithCompletionBlock { (error, reff) in
+            if (error != nil) {
+                print("error: ", error)
+                return
+            }
+            print("Flag has been removed!!")
+            self.flags.removeAtIndex(indexPath.row)
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+        }
+    }
+    
+    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
