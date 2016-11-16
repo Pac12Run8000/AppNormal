@@ -8,13 +8,75 @@
 
 import UIKit
 import Firebase
+import AVFoundation
 
 class FlagCell: UITableViewCell {
     
     var flag: Flag? {
         didSet {
-        
+            
+          self.complaintLabel.text = flag?.flagComplaint
+            if let postId = flag?.flaggedPostId {
+                let pRef = FIRDatabase.database().reference().child("feed").child(postId)
+                pRef.observeSingleEventOfType(.Value, withBlock: { (snapshot) in
+                    if let dictionary = snapshot.value as? [String:AnyObject] {
+                        if let postImageUrl = dictionary["postImageUrl"] as? String {
+                            self.postImageView.loadImageUsingCacheWithUrlString(postImageUrl)
+                        }
+                        if let videoUrl = dictionary["videoUrl"] as? String, url = NSURL(string: videoUrl) {
+                            self.postImageView.image = self.generateThumnail(url, fromTime: Float64(1.22))
+                        }
+                    }
+                    
+                    
+                    }, withCancelBlock: nil)
+            }
+            
+            if let offenderId = flag?.flaggedUserId {
+                let ref = FIRDatabase.database().reference().child("users").child(offenderId)
+                ref.observeSingleEventOfType(.Value, withBlock: { (snapshot) in
+                    if let dictionary = snapshot.value as? [String:AnyObject] {                        
+                        self.offenderLabel.text = "offender: \(dictionary["name"] as! String)"
+                        
+                        if let profileImageUrl = dictionary["profileImageUrl"] as? String {
+                            self.profileImageView.loadImageUsingCacheWithUrlString(profileImageUrl)
+                        }
+                        
+                    }
+                    }, withCancelBlock: nil)
+                
+                
+            }
+            if let accuserId = flag?.uId {
+                let ref = FIRDatabase.database().reference().child("users").child(accuserId)
+                ref.observeSingleEventOfType(.Value, withBlock: { (snapshot) in
+                    if let dictionary = snapshot.value as? [String:AnyObject] {
+                        self.accuserLabel.text = "accuser: \(dictionary["name"] as! String)"
+                        
+                        
+                        
+                    }
+                    }, withCancelBlock: nil)
+            }
+            
         }
+    }
+    
+    internal func generateThumnail(url : NSURL, fromTime:Float64) -> UIImage? {
+        let asset: AVAsset = AVAsset(URL: url)
+        let assetImgGenerate: AVAssetImageGenerator = AVAssetImageGenerator(asset: asset)
+        assetImgGenerate.appliesPreferredTrackTransform = true
+        assetImgGenerate.requestedTimeToleranceAfter = kCMTimeZero
+        assetImgGenerate.requestedTimeToleranceBefore = kCMTimeZero
+        
+        do {
+            let img: CGImageRef = try assetImgGenerate.copyCGImageAtTime(CMTimeMake(1, 60), actualTime: nil)
+            let frameImg:UIImage = UIImage(CGImage: img)
+            return frameImg
+        } catch let err {
+            print(err)
+        }
+        return nil
     }
     
     let postImageView:UIImageView = {
@@ -24,6 +86,7 @@ class FlagCell: UITableViewCell {
         imageView.backgroundColor = ChatMessageCell.orangeishColor
         imageView.layer.masksToBounds = true
         imageView.layer.cornerRadius = 7
+        imageView.contentMode = .ScaleAspectFit
         return imageView
     }()
     
@@ -38,20 +101,32 @@ class FlagCell: UITableViewCell {
         return imageView
     }()
     
-    let usernameLabel:PaddingLabel = {
+    let offenderLabel:PaddingLabel = {
         let label = PaddingLabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.layer.masksToBounds = true
         label.layer.cornerRadius = 5
         label.backgroundColor = ChatMessageCell.blackishColor
         label.textColor = UIColor.whiteColor()
-        label.text = "Sample user"
-        label.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 15)
+        label.text = "offender:"
+        label.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 11)
         return label
     }()
     
-    let complaintLabel:PaddingLabel = {
+    let accuserLabel:PaddingLabel = {
         let label = PaddingLabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.layer.masksToBounds = true
+        label.layer.cornerRadius = 5
+        label.backgroundColor = ChatMessageCell.blackishColor
+        label.textColor = UIColor.whiteColor()
+        label.text = "accuser:"
+        label.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 11)
+        return label
+    }()
+    
+    let complaintLabel:UITextView = {
+        let label = UITextView()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 15)
         label.textColor = UIColor.whiteColor()
@@ -59,6 +134,8 @@ class FlagCell: UITableViewCell {
         label.backgroundColor = ChatMessageCell.lightBrownishColor
         label.layer.masksToBounds = true
         label.layer.cornerRadius = 4
+       
+        label.editable = false
         return label
     }()
     
@@ -67,22 +144,30 @@ class FlagCell: UITableViewCell {
         
         addSubview(postImageView)
         addSubview(profileImageView)
-        addSubview(usernameLabel)
+        addSubview(offenderLabel)
         addSubview(complaintLabel)
+        addSubview(accuserLabel)
         
         self.backgroundColor = ChatMessageCell.browishColor
         
-        complaintLabel.leftAnchor.constraintEqualToAnchor(profileImageView.rightAnchor, constant: 20).active = true
+        
+        
+        complaintLabel.leftAnchor.constraintEqualToAnchor(profileImageView.rightAnchor, constant: 40).active = true
         complaintLabel.rightAnchor.constraintEqualToAnchor(self.rightAnchor, constant: -5).active = true
         complaintLabel.topAnchor.constraintEqualToAnchor(self.topAnchor, constant: 5).active = true
         complaintLabel.bottomAnchor.constraintEqualToAnchor(self.bottomAnchor, constant: -5).active = true
         
-        usernameLabel.topAnchor.constraintEqualToAnchor(postImageView.bottomAnchor, constant: 5).active = true
-        usernameLabel.leftAnchor.constraintEqualToAnchor(self.leftAnchor, constant: 10).active = true
-        usernameLabel.widthAnchor.constraintEqualToConstant(150).active = true
-        usernameLabel.heightAnchor.constraintEqualToConstant(30).active = true
+        accuserLabel.topAnchor.constraintEqualToAnchor(offenderLabel.bottomAnchor, constant: 5).active = true
+        accuserLabel.leftAnchor.constraintEqualToAnchor(self.leftAnchor, constant: 10).active = true
+        accuserLabel.widthAnchor.constraintEqualToConstant(150).active = true
+        accuserLabel.heightAnchor.constraintEqualToConstant(30).active = true
         
-        profileImageView.leftAnchor.constraintEqualToAnchor(postImageView.rightAnchor, constant: 10).active = true
+        offenderLabel.topAnchor.constraintEqualToAnchor(postImageView.bottomAnchor, constant: 5).active = true
+        offenderLabel.leftAnchor.constraintEqualToAnchor(self.leftAnchor, constant: 10).active = true
+        offenderLabel.widthAnchor.constraintEqualToConstant(150).active = true
+        offenderLabel.heightAnchor.constraintEqualToConstant(30).active = true
+        
+        profileImageView.leftAnchor.constraintEqualToAnchor(postImageView.rightAnchor, constant: -10).active = true
         profileImageView.topAnchor.constraintEqualToAnchor(self.topAnchor, constant: 20).active = true
         profileImageView.widthAnchor.constraintEqualToConstant(50).active = true
         profileImageView.heightAnchor.constraintEqualToConstant(50).active = true

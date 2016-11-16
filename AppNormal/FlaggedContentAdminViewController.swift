@@ -54,7 +54,7 @@ class FlaggedContentAdminViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 150
+        return 190
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -63,8 +63,6 @@ class FlaggedContentAdminViewController: UITableViewController {
         let flag = flags[indexPath.row]
         cell.flag = flag
        
-        
-//        cell.textLabel?.text = flag.flagComplaint
         
         return cell
     }
