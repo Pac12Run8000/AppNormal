@@ -66,7 +66,7 @@ class NewMessageController: UITableViewController {
         
         let user = users[indexPath.row]
         cell.textLabel?.text = user.name
-        cell.detailTextLabel?.text = user.email
+//        cell.detailTextLabel?.text = user.email
        
         
         if let profileImageUrl = user.profileImageUrl {

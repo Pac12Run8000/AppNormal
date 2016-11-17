@@ -277,36 +277,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
                 return
             }
             print("Upload Successful!!!")
-        }
-        
-        
-//        let ref = FIRDatabase.database().reference().child("messages")
-//        let childRef = ref.childByAutoId()
-//        
-//        let toId = user!.id!
-//        let fromId = FIRAuth.auth()!.currentUser!.uid
-//        let timestamp: NSNumber = Int(NSDate().timeIntervalSince1970)
-//        var values: [String:AnyObject] = ["toId": toId, "fromId": fromId, "timestamp": timestamp]
-//        
-//        properties.forEach({values[$0] = $1})
-//        
-//        childRef.updateChildValues(values) { (error, ref) in
-//            if (error != nil) {
-//                print(error)
-//                return
-//            }
-//            
-//            self.inputTextField.text = nil
-//            
-//            let userMessagesRef = FIRDatabase.database().reference().child("user-messages").child(fromId).child(toId)
-//            let messageId = childRef.key
-//            userMessagesRef.updateChildValues([messageId: 1])
-//            
-//            let recipientUserMessagesRef = FIRDatabase.database().reference().child("user-messages").child(toId).child(fromId)
-//            recipientUserMessagesRef.updateChildValues([messageId: 1])
-//            
-//        }
-        
+        }        
     }
     
     private func handleImageSelectedForInfo(info:[String: AnyObject]) {
