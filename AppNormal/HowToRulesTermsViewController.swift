@@ -34,10 +34,28 @@ class HowToRulesTermsViewController: UIViewController {
         button.layer.borderWidth = 2
         button.layer.borderColor = ChatMessageCell.lightBrownishColor.CGColor
         button.setTitle("Admin", forState: .Normal)
-        button.tintColor = UIColor.blackColor()
+        button.tintColor = UIColor.blackColor() 
         button.addTarget(self, action: #selector(getFlaggedContent), forControlEvents: UIControlEvents.TouchUpInside)
         return button
     }()
+    
+    lazy var reportUserButton: UIButton = {
+        let button = UIButton(type: .System)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = ChatMessageCell.orangeishColor
+        button.setTitle("Report User", forState: .Normal)
+        button.tintColor = UIColor.blackColor()
+        button.addTarget(self, action: #selector(retrieveUsers), forControlEvents: UIControlEvents.TouchUpInside)
+        
+        button.layer.cornerRadius = 5
+        button.layer.masksToBounds = true
+        return button
+    }()
+    
+    func retrieveUsers() {
+        let deleteUserViewController = DeleteUserTableViewController()
+        navigationController?.pushViewController(deleteUserViewController, animated: true)
+    }
     
     func getFlaggedContent() {
         let flaggedcontentAdmin = FlaggedContentAdminViewController()
@@ -95,6 +113,12 @@ class HowToRulesTermsViewController: UIViewController {
     func setUpContainerView() {
         view.addSubview(contentContainerView)
         view.addSubview(adminButton)
+        view.addSubview(reportUserButton)
+        
+        reportUserButton.leftAnchor.constraintEqualToAnchor(adminButton.rightAnchor, constant: 5).active = true
+        reportUserButton.topAnchor.constraintEqualToAnchor(adminButton.topAnchor).active = true
+        reportUserButton.widthAnchor.constraintEqualToConstant(100).active = true
+        reportUserButton.heightAnchor.constraintEqualToConstant(60).active = true
         
         adminButton.topAnchor.constraintEqualToAnchor(ruleSegmentController.bottomAnchor, constant: 20).active = true
         adminButton.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
