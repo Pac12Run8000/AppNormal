@@ -53,13 +53,12 @@ class HowToRulesTermsViewController: UIViewController {
     }()
     
     func retrieveUsers() {
-        let deleteUserViewController = DeleteUserTableViewController()
-        navigationController?.pushViewController(deleteUserViewController, animated: true)
+        let flagUserViewController = FlagUserTableViewController()
+        navigationController?.pushViewController(flagUserViewController, animated: true)
     }
     
     func getFlaggedContent() {
         let flaggedcontentAdmin = FlaggedContentAdminViewController()
-        
         navigationController?.pushViewController(flaggedcontentAdmin, animated: true)
     }
     
