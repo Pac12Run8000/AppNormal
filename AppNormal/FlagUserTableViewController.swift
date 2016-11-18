@@ -14,7 +14,7 @@ class FlagUserTableViewController: UITableViewController, UISearchControllerDele
     let cellId = "cellId"
 
     var users = [User]()
-    var usersToDisplay = [User]()
+    var filteredUsers = [User]()
     var usersDictionary = [String:User]()
     var searchController: UISearchController!
     
@@ -24,12 +24,15 @@ class FlagUserTableViewController: UITableViewController, UISearchControllerDele
         tableView.separatorColor = ChatMessageCell.orangeishColor
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: cellId)
         fetchUser()
-        usersToDisplay = users
+        
+        
+        
         self.searchController = UISearchController(searchResultsController: nil)
         self.searchController.delegate = self
         self.searchController.searchBar.delegate = self
         self.searchController.searchResultsUpdater = self
         self.searchController.searchBar.sizeToFit()
+        self.searchController.dimsBackgroundDuringPresentation = false
         
         self.tableView.tableHeaderView = self.searchController.searchBar
     }
@@ -43,7 +46,8 @@ class FlagUserTableViewController: UITableViewController, UISearchControllerDele
                 user.id = snapshot.key
                 user.setValuesForKeysWithDictionary(dictionary)
                 self.users.append(user)
-                dispatch_async(dispatch_get_main_queue(), { 
+                self.filteredUsers.append(user)
+                dispatch_async(dispatch_get_main_queue(), {
                     self.tableView.reloadData()
                 })
             }
@@ -58,13 +62,13 @@ class FlagUserTableViewController: UITableViewController, UISearchControllerDele
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath)
-        let user = users[indexPath.row]
+        let user = filteredUsers[indexPath.row]
         cell.textLabel!.text = user.name
         return cell
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return users.count
+        return filteredUsers.count
     }
     
 
@@ -72,7 +76,7 @@ class FlagUserTableViewController: UITableViewController, UISearchControllerDele
     func updateSearchResultsForSearchController(searchController: UISearchController) {
         let searchString:String = searchController.searchBar.text!
         
-        self.usersToDisplay = self.users.filter({ (user:User) -> Bool in
+        self.filteredUsers = self.users.filter({ (user:User) -> Bool in
             let name = user.name
                 let match = name!.rangeOfString(searchString)
                 if (match != nil) {
@@ -84,6 +88,15 @@ class FlagUserTableViewController: UITableViewController, UISearchControllerDele
         self.tableView.reloadData()
     
     }
-
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        self.filteredUsers = self.users
+        self.tableView.reloadData()
+    }
+    
+    func didDismissSearchController(searchController: UISearchController) {
+        self.filteredUsers = self.users
+        self.tableView.reloadData()
+    }
 
 }
