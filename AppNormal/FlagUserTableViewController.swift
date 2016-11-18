@@ -24,6 +24,7 @@ class FlagUserTableViewController: UITableViewController, UISearchControllerDele
         tableView.separatorColor = ChatMessageCell.orangeishColor
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: cellId)
         fetchUser()
+        usersToDisplay = users
         self.searchController = UISearchController(searchResultsController: nil)
         self.searchController.delegate = self
         self.searchController.searchBar.delegate = self
@@ -38,10 +39,10 @@ class FlagUserTableViewController: UITableViewController, UISearchControllerDele
         ref.observeEventType(.ChildAdded, withBlock: { (snapshot) in
             if let dictionary = snapshot.value as? [String: AnyObject] {
                 let user = User()
+               
                 user.id = snapshot.key
                 user.setValuesForKeysWithDictionary(dictionary)
                 self.users.append(user)
-                self.usersToDisplay.append(user)
                 dispatch_async(dispatch_get_main_queue(), { 
                     self.tableView.reloadData()
                 })
@@ -57,7 +58,7 @@ class FlagUserTableViewController: UITableViewController, UISearchControllerDele
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCellWithIdentifier(cellId, forIndexPath: indexPath)
-        let user = usersToDisplay[indexPath.row]
+        let user = users[indexPath.row]
         cell.textLabel!.text = user.name
         return cell
     }
