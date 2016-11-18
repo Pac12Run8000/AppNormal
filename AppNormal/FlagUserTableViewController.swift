@@ -71,6 +71,14 @@ class FlagUserTableViewController: UITableViewController, UISearchControllerDele
         return filteredUsers.count
     }
     
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let flagUserViewController = FlagUserViewController()
+        let user = filteredUsers[indexPath.row]
+        flagUserViewController.user = user
+        let navController = UINavigationController(rootViewController: flagUserViewController)
+        presentViewController(navController, animated: true, completion: nil)
+    }
+    
 
     
     func updateSearchResultsForSearchController(searchController: UISearchController) {
