@@ -38,7 +38,10 @@ class FlaggedContentAdminViewController: UITableViewController {
                 let flagId = snapshot.key
                 let flag = Flag(dictionary: dictionary)
                 flag.flagId = flagId
-                self.flags.append(flag)
+                
+                if (flag.flaggedPostId != nil) {
+                    self.flags.append(flag)
+                }
                 
                 dispatch_async(dispatch_get_main_queue(), { 
                     self.tableView.reloadData()
