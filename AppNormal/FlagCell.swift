@@ -26,6 +26,10 @@ class FlagCell: UITableViewCell {
                         if let videoUrl = dictionary["videoUrl"] as? String, url = NSURL(string: videoUrl) {
                             self.postImageView.image = self.generateThumnail(url, fromTime: Float64(1.22))
                         }
+                        
+                        if let seconds = dictionary["timestamp"] as? NSNumber {
+                            self.timeStampLabel.text = self.formatTimeStamp(seconds)
+                        }
                     }
                     
                     
@@ -60,6 +64,17 @@ class FlagCell: UITableViewCell {
             }
             
         }
+    }
+    
+    internal func formatTimeStamp(timestamp: NSNumber) -> String {
+        let seconds = timestamp.doubleValue
+        
+        let timestampDate = NSDate(timeIntervalSince1970: seconds)
+        
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "hh:mm:ss a"
+        
+        return dateFormatter.stringFromDate(timestampDate)
     }
     
     internal func generateThumnail(url : NSURL, fromTime:Float64) -> UIImage? {
@@ -139,6 +154,20 @@ class FlagCell: UITableViewCell {
         return label
     }()
     
+    let timeStampLabel:PaddingLabel = {
+        let label = PaddingLabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 12)
+        label.textColor = UIColor.whiteColor()
+        label.backgroundColor = ChatMessageCell.lightBrownishColor
+        label.layer.masksToBounds = true
+        label.layer.cornerRadius = 5
+//        label.text = "11/17/69"
+        label.layer.borderWidth = 2
+        label.layer.borderColor = UIColor.blackColor().CGColor
+        return label
+    }()
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: .Subtitle, reuseIdentifier: reuseIdentifier)
         
@@ -147,10 +176,14 @@ class FlagCell: UITableViewCell {
         addSubview(offenderLabel)
         addSubview(complaintLabel)
         addSubview(accuserLabel)
+        addSubview(timeStampLabel)
         
         self.backgroundColor = ChatMessageCell.browishColor
         
-        
+        timeStampLabel.leftAnchor.constraintEqualToAnchor(postImageView.rightAnchor, constant: -10).active = true
+        timeStampLabel.topAnchor.constraintEqualToAnchor(profileImageView.bottomAnchor, constant: 5).active = true
+        timeStampLabel.rightAnchor.constraintEqualToAnchor(offenderLabel.rightAnchor).active = true
+        timeStampLabel.heightAnchor.constraintEqualToConstant(30).active = true
         
         complaintLabel.leftAnchor.constraintEqualToAnchor(profileImageView.rightAnchor, constant: 40).active = true
         complaintLabel.rightAnchor.constraintEqualToAnchor(self.rightAnchor, constant: -5).active = true
@@ -168,7 +201,7 @@ class FlagCell: UITableViewCell {
         offenderLabel.heightAnchor.constraintEqualToConstant(30).active = true
         
         profileImageView.leftAnchor.constraintEqualToAnchor(postImageView.rightAnchor, constant: -10).active = true
-        profileImageView.topAnchor.constraintEqualToAnchor(self.topAnchor, constant: 20).active = true
+        profileImageView.topAnchor.constraintEqualToAnchor(self.topAnchor, constant: 5).active = true
         profileImageView.widthAnchor.constraintEqualToConstant(50).active = true
         profileImageView.heightAnchor.constraintEqualToConstant(50).active = true
         
