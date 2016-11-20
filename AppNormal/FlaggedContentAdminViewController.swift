@@ -22,10 +22,18 @@ class FlaggedContentAdminViewController: UITableViewController {
         super.viewDidLoad()
         fetchFlags()
         
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Users", style: .Plain, target: self, action: #selector(handleGetUsers))
         tableView.registerClass(FlagCell.self, forCellReuseIdentifier: cellId)
+        navigationController?.navigationBar.tintColor = ChatMessageCell.blackishColor
         tableView.separatorColor = ChatMessageCell.orangeishColor
         tableView.allowsMultipleSelectionDuringEditing = true
         
+    }
+    
+    func handleGetUsers() {
+        let flaguseradminTableviewController = FlaggedUsersAdminTableViewController()
+        let navController = UINavigationController(rootViewController: flaguseradminTableviewController)
+        presentViewController(navController, animated: true, completion: nil)
     }
     
     func fetchFlags() {
