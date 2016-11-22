@@ -18,6 +18,7 @@ class PostDetailController: UIViewController {
         }
     }
     
+    var like:Bool = true
     var feedViewController: FeedViewController?
     
     let dateTimeLabel:UILabel = {
@@ -44,7 +45,7 @@ class PostDetailController: UIViewController {
         
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
        
-        label.contentInset = UIEdgeInsetsMake(-40.0,0.0,0,0.0)
+        label.contentInset = UIEdgeInsetsMake(-30.0,0.0,0,0.0)
         label.userInteractionEnabled = false
 //        label.backgroundColor = UIColor.grayColor()
         return label
@@ -107,10 +108,56 @@ class PostDetailController: UIViewController {
         return button
     }()
     
+    lazy var likeButton:UIButton = {
+        let button = UIButton(type: UIButtonType.System)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Like", forState: UIControlState.Normal)
+        button.backgroundColor = ChatMessageCell.browishColor
+        button.setTitleColor(ChatMessageCell.orangeishColor, forState: UIControlState.Normal)
+        button.layer.cornerRadius = 4
+        button.layer.masksToBounds = true
+        button.addTarget(self, action: #selector(handleLike), forControlEvents: .TouchUpInside)
+        return button
+    }()
+    
     
     var playeLayer: AVPlayerLayer?
     var player: AVPlayer?
     
+    func handleLike() {
+        
+//        guard let uId = FIRAuth.auth()?.currentUser?.uid, postId = post?.postId else {
+//            return
+//        }
+        
+        if (like == true) {
+            like = false
+            likeButton.backgroundColor = ChatMessageCell.orangeishColor
+            likeButton.setTitleColor(ChatMessageCell.browishColor, forState: UIControlState.Normal)
+        } else {
+            like = true
+            likeButton.backgroundColor = ChatMessageCell.browishColor
+            likeButton.setTitleColor(ChatMessageCell.orangeishColor, forState: UIControlState.Normal)
+        }
+
+        
+        
+        print(like)
+        
+//        let ref = FIRDatabase.database().reference().child("likes")
+//        let childRef = ref.childByAutoId()
+//        
+//        let values:[String:AnyObject] = ["uId": uId, "postId": postId, "like":like]
+//        
+//        childRef.updateChildValues(values) { (error, refer) in
+//            if (error != nil) {
+//                print(error)
+//                return
+//            }
+//            print("Like added!")
+//        }
+        
+    }
     
     func flagContent() {
         let flagPost = post
@@ -194,6 +241,8 @@ class PostDetailController: UIViewController {
     
         return timeVal
     }
+    
+   
 
     func mainContainer() {
         view.addSubview(labelView)
@@ -204,6 +253,12 @@ class PostDetailController: UIViewController {
         view.addSubview(playButton)
         view.addSubview(videoActivityIndicatorView)
         view.addSubview(flagButton)
+        view.addSubview(likeButton)
+        
+        likeButton.topAnchor.constraintEqualToAnchor(commentField.topAnchor, constant: 5).active = true
+        likeButton.rightAnchor.constraintEqualToAnchor(view.rightAnchor, constant: -10).active = true
+        likeButton.widthAnchor.constraintEqualToConstant(60).active = true
+        likeButton.heightAnchor.constraintEqualToConstant(30).active = true
         
         flagButton.rightAnchor.constraintEqualToAnchor(view.rightAnchor).active = true
         flagButton.topAnchor.constraintEqualToAnchor(dateTimeLabel.topAnchor).active = true
