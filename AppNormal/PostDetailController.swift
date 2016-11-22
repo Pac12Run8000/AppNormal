@@ -18,7 +18,7 @@ class PostDetailController: UIViewController {
         }
     }
     
-    var like:Bool = true
+    var like:Bool = false
     var feedViewController: FeedViewController?
     
     let dateTimeLabel:UILabel = {
@@ -126,16 +126,16 @@ class PostDetailController: UIViewController {
     
     func handleLike() {
         
-//        guard let uId = FIRAuth.auth()?.currentUser?.uid, postId = post?.postId else {
-//            return
-//        }
+        guard let uId = FIRAuth.auth()?.currentUser?.uid, postId = post?.postId else {
+            return
+        }
         
-        if (like == true) {
-            like = false
+        if (like == false) {
+            like = true
             likeButton.backgroundColor = ChatMessageCell.orangeishColor
             likeButton.setTitleColor(ChatMessageCell.browishColor, forState: UIControlState.Normal)
         } else {
-            like = true
+            like = false
             likeButton.backgroundColor = ChatMessageCell.browishColor
             likeButton.setTitleColor(ChatMessageCell.orangeishColor, forState: UIControlState.Normal)
         }
@@ -144,18 +144,18 @@ class PostDetailController: UIViewController {
         
         print(like)
         
-//        let ref = FIRDatabase.database().reference().child("likes")
-//        let childRef = ref.childByAutoId()
-//        
-//        let values:[String:AnyObject] = ["uId": uId, "postId": postId, "like":like]
-//        
-//        childRef.updateChildValues(values) { (error, refer) in
-//            if (error != nil) {
-//                print(error)
-//                return
-//            }
-//            print("Like added!")
-//        }
+        let ref = FIRDatabase.database().reference().child("likes")
+        let childRef = ref.child(uId + "-" + postId)
+        
+        let values:[String:AnyObject] = ["uId": uId, "postId": postId, "like":like]
+        
+        childRef.updateChildValues(values) { (error, refer) in
+            if (error != nil) {
+                print(error)
+                return
+            }
+            print("Like added!")
+        }
         
     }
     
@@ -202,7 +202,8 @@ class PostDetailController: UIViewController {
     }
     
     func sharePost() {
-    
+        let vc = UIActivityViewController(activityItems: [postImageView.image!, commentField.text], applicationActivities: nil)
+        self.presentViewController(vc, animated: true, completion: nil)
     }
     
     func displayImagesAndText() {
