@@ -52,6 +52,40 @@ class HowToRulesTermsViewController: UIViewController {
         return button
     }()
     
+    let rulesView:UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = ChatMessageCell.orangeishColor
+        view.tintColor = ChatMessageCell.browishColor
+        return view
+    }()
+    
+    let rulesWebV:UIWebView = {
+        let view = UIWebView(frame: CGRectMake(0,0, UIScreen.mainScreen().bounds.width, UIScreen.mainScreen().bounds.height))
+        if let URL = NSURL(string: "https://www.google.com") {
+            view.loadRequest(NSURLRequest(URL: URL))
+        }
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    let termsView:UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = ChatMessageCell.redishColor
+        view.tintColor = ChatMessageCell.redishColor
+        return view
+    }()
+    
+    let termsWebV:UIWebView = {
+        let view = UIWebView(frame: CGRectMake(0,0, UIScreen.mainScreen().bounds.width, UIScreen.mainScreen().bounds.height))
+        if let URL = NSURL(string: "https://youtu.be/Czp06Ljk48Y") {
+            view.loadRequest(NSURLRequest(URL: URL))
+        }
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     func retrieveUsers() {
         let flagUserViewController = FlagUserTableViewController()
         navigationController?.pushViewController(flagUserViewController, animated: true)
@@ -80,7 +114,8 @@ class HowToRulesTermsViewController: UIViewController {
         view.backgroundColor = ChatMessageCell.browishColor
         navigationItem.title = "Terms of Use"
         
-        
+        rulesView.hidden = false
+        termsView.hidden = true
         setUpSegmentedControl()
         setUpContainerView()
     }
@@ -104,8 +139,10 @@ class HowToRulesTermsViewController: UIViewController {
         
         if (obj.email == "Sosagrover1987@gmail.com") {
             adminButton.hidden = false
+           
         } else {
             adminButton.hidden = true
+            
         }
     }
     
@@ -113,6 +150,20 @@ class HowToRulesTermsViewController: UIViewController {
         view.addSubview(contentContainerView)
         view.addSubview(adminButton)
         view.addSubview(reportUserButton)
+        view.addSubview(rulesView)
+        view.addSubview(termsView)
+        rulesView.addSubview(rulesWebV)
+        termsView.addSubview(termsWebV)
+        
+        termsView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
+        termsView.topAnchor.constraintEqualToAnchor(adminButton.bottomAnchor, constant: 10).active = true
+        termsView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor, constant: -60).active = true
+        termsView.widthAnchor.constraintEqualToAnchor(view.widthAnchor).active = true
+        
+        rulesView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
+        rulesView.topAnchor.constraintEqualToAnchor(adminButton.bottomAnchor, constant: 10).active = true
+        rulesView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor, constant: -60).active = true
+        rulesView.widthAnchor.constraintEqualToAnchor(view.widthAnchor).active = true
         
         reportUserButton.leftAnchor.constraintEqualToAnchor(adminButton.rightAnchor, constant: 5).active = true
         reportUserButton.topAnchor.constraintEqualToAnchor(adminButton.topAnchor).active = true
@@ -142,7 +193,14 @@ class HowToRulesTermsViewController: UIViewController {
     
     
     func handleSelectionChanged() {
-        print(ruleSegmentController.selectedSegmentIndex)
+        //print(ruleSegmentController.selectedSegmentIndex)
+        if (ruleSegmentController.selectedSegmentIndex == 0) {
+            rulesView.hidden = false
+            termsView.hidden = true
+        } else {
+            rulesView.hidden = true
+            termsView.hidden = false
+        }
     }
 
 }
