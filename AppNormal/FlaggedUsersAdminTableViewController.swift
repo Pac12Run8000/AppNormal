@@ -69,11 +69,8 @@ class FlaggedUsersAdminTableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-//        print(indexPath.row)
         
         let flag = self.flags[indexPath.row]
-        
-//        print(flag.flagId)
         
         guard let flagId = flag.flagId, flaggedUserId = flag.flaggedUserId else {
             return
@@ -97,7 +94,31 @@ class FlaggedUsersAdminTableViewController: UITableViewController {
             print("User removed from flags")
         }
         
-        print("Post not removed from Feed. Remove manually ...")
+        let postRef = FIRDatabase.database().reference().child("feed")
+        postRef.observeEventType(.ChildAdded, withBlock: { (snapshot) in
+            if let dictionary = snapshot.value as? [String:AnyObject] {
+                
+                if (flaggedUserId == dictionary["fromId"] as? String) {
+                    let postId = snapshot.key
+                    let post = Post(dictionary: dictionary)
+                    post.postId = postId
+                    
+                    if let removePostId = post.postId {
+                        
+                    let removePostRef = FIRDatabase.database().reference().child("feed").child(removePostId)
+                    removePostRef.removeValueWithCompletionBlock({ (err, ref) in
+                        if (err != nil) {
+                            print(err)
+                            return
+                        }
+                        print("the posts removed")
+                    })
+                        
+                    }
+                }
+            }
+            }, withCancelBlock: nil)
+        
         
         self.flags.removeAtIndex(indexPath.row)
         tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
