@@ -55,16 +55,16 @@ class HowToRulesTermsViewController: UIViewController {
     let rulesView:UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = ChatMessageCell.orangeishColor
-        view.tintColor = ChatMessageCell.browishColor
         return view
     }()
     
     let rulesWebV:UIWebView = {
         let view = UIWebView(frame: CGRectMake(0,0, UIScreen.mainScreen().bounds.width, UIScreen.mainScreen().bounds.height))
-        if let URL = NSURL(string: "https://www.google.com") {
-            view.loadRequest(NSURLRequest(URL: URL))
+
+        if let NSBundlePath = NSBundle.mainBundle().pathForResource("rules", ofType: "html") {
+            view.loadRequest(NSURLRequest(URL: NSURL(fileURLWithPath: NSBundlePath)))
         }
+        view.backgroundColor = ChatMessageCell.orangeishColor
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -72,15 +72,14 @@ class HowToRulesTermsViewController: UIViewController {
     let termsView:UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = ChatMessageCell.redishColor
-        view.tintColor = ChatMessageCell.redishColor
+        
         return view
     }()
     
     let termsWebV:UIWebView = {
         let view = UIWebView(frame: CGRectMake(0,0, UIScreen.mainScreen().bounds.width, UIScreen.mainScreen().bounds.height))
-        if let URL = NSURL(string: "https://youtu.be/Czp06Ljk48Y") {
-            view.loadRequest(NSURLRequest(URL: URL))
+        if let NSBundlePath = NSBundle.mainBundle().pathForResource("terms", ofType: "html") {
+            view.loadRequest(NSURLRequest(URL: NSURL(fileURLWithPath: NSBundlePath)))
         }
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
