@@ -120,6 +120,20 @@ class PostDetailController: UIViewController {
         return button
     }()
     
+    let likeCountLabel:PaddingLabel = {
+        let label = PaddingLabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
+        label.layer.cornerRadius = 4
+        label.backgroundColor = ChatMessageCell.redishColor
+        label.textColor = UIColor.whiteColor()
+//        label.text = "3"
+//        label.layer.borderWidth = 2
+        label.layer.masksToBounds = true
+//        label.layer.borderColor = UIColor.blackColor().CGColor
+        return label
+    }()
+    
     
     var playeLayer: AVPlayerLayer?
     var player: AVPlayer?
@@ -157,6 +171,8 @@ class PostDetailController: UIViewController {
             print("Like added!")
         }
         
+       getLikeCount()
+        
     }
     
     func flagContent() {
@@ -183,11 +199,46 @@ class PostDetailController: UIViewController {
         }
     }
     
+    
+    
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
         handleLikes()
         
+        getLikeCount()
+        
+       
+        
+    }
+    
+    func getLikeCount() {
+        var likeCount:Int = 0
+        let ref = FIRDatabase.database().reference().child("likes")
+        ref.observeEventType(.ChildAdded, withBlock: { (snapshot) in
+            
+            if let dictionary = snapshot.value as? [String:AnyObject] {
+                
+                if (self.post?.postId == dictionary["postId"] as? String) {
+                    
+                    if (dictionary["like"] as? Bool == true) {
+                    
+                        
+                        let likeId = snapshot.key
+                        let like = Like(dictionary: dictionary)
+                        like.likeId = likeId
+                        likeCount += 1
+                        
+                        self.likeCountLabel.text = String(likeCount)
+                        
+                        print("postId:", like.postId, "like:", like.like, "likeCount: ", likeCount)
+                    }
+                    
+                }
+                
+            }
+            
+            }, withCancelBlock: nil)
     }
     
     func handleLikes() {
@@ -294,6 +345,12 @@ class PostDetailController: UIViewController {
         view.addSubview(videoActivityIndicatorView)
         view.addSubview(flagButton)
         view.addSubview(likeButton)
+        view.addSubview(likeCountLabel)
+        
+        likeCountLabel.rightAnchor.constraintEqualToAnchor(likeButton.leftAnchor, constant: -10).active = true
+        likeCountLabel.topAnchor.constraintEqualToAnchor(likeButton.topAnchor).active = true
+        likeCountLabel.widthAnchor.constraintEqualToConstant(30).active = true
+        likeCountLabel.heightAnchor.constraintEqualToConstant(30).active = true
         
         likeButton.topAnchor.constraintEqualToAnchor(commentField.topAnchor, constant: 5).active = true
         likeButton.rightAnchor.constraintEqualToAnchor(view.rightAnchor, constant: -10).active = true
