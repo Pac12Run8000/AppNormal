@@ -182,6 +182,47 @@ class PostDetailController: UIViewController {
             
         }
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        handleLikes()
+        
+    }
+    
+    func handleLikes() {
+        guard let uId = FIRAuth.auth()?.currentUser?.uid, postId = post?.postId else {
+            return
+        }
+        
+        let ref = FIRDatabase.database().reference().child("likes").child(uId + "-" + postId)
+        ref.observeSingleEventOfType(.Value, withBlock: { (snapshot) in
+            if let dictionary = snapshot.value as? [String:AnyObject] {
+                if let like = dictionary["like"] as? Bool {
+                    if (like == true) {
+                        self.setLikeButtonTrue()
+                    } else {
+                        self.setLikeButtonFalse()
+                    }
+                } else {
+                    self.setLikeButtonFalse()
+                    
+                }
+            }
+            }, withCancelBlock: nil)
+    }
+    
+    func setLikeButtonFalse() {
+        likeButton.setTitleColor(ChatMessageCell.orangeishColor, forState: UIControlState.Normal)
+        likeButton.backgroundColor = ChatMessageCell.browishColor
+        like = false
+    }
+    
+    func setLikeButtonTrue() {
+        likeButton.setTitleColor(ChatMessageCell.browishColor, forState: UIControlState.Normal)
+        likeButton.backgroundColor = ChatMessageCell.orangeishColor
+        like = true
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -197,8 +238,6 @@ class PostDetailController: UIViewController {
         
         
         mainContainer()
-        
-        
     }
     
     func sharePost() {
