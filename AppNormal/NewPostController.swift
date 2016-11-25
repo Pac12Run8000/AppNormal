@@ -16,7 +16,7 @@ class NewPostController: UIViewController, UIImagePickerControllerDelegate, UINa
     let instructionLabel:UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Click box below to add photo.\r\nor video"
+        label.text = "Click box below to add photo.\r\nor video (NO LONGER THAN 5 MINUTES!!)"
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
         label.numberOfLines = 3
         label.textAlignment = .Center
