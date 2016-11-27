@@ -52,6 +52,19 @@ class HowToRulesTermsViewController: UIViewController {
         return button
     }()
     
+    lazy var userSettingsButton: UIButton = {
+        let button = UIButton(type: .System)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = ChatMessageCell.orangeishColor
+        button.setTitle("Settings", forState: .Normal)
+        button.tintColor = UIColor.blackColor()
+        button.addTarget(self, action: #selector(getSettings), forControlEvents: UIControlEvents.TouchUpInside)
+        
+        button.layer.cornerRadius = 5
+        button.layer.masksToBounds = true
+        return button
+    }()
+    
     let rulesView:UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -84,6 +97,11 @@ class HowToRulesTermsViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+    
+    func getSettings() {
+        let settingsViewController = SettingsViewController()
+        navigationController?.pushViewController(settingsViewController, animated: true)
+    }
     
     func retrieveUsers() {
         let flagUserViewController = FlagUserTableViewController()
@@ -151,8 +169,14 @@ class HowToRulesTermsViewController: UIViewController {
         view.addSubview(reportUserButton)
         view.addSubview(rulesView)
         view.addSubview(termsView)
+        view.addSubview(userSettingsButton)
         rulesView.addSubview(rulesWebV)
         termsView.addSubview(termsWebV)
+        
+        userSettingsButton.rightAnchor.constraintEqualToAnchor(adminButton.leftAnchor, constant: -5).active = true
+        userSettingsButton.topAnchor.constraintEqualToAnchor(adminButton.topAnchor).active = true
+        userSettingsButton.widthAnchor.constraintEqualToConstant(100).active = true
+        userSettingsButton.heightAnchor.constraintEqualToConstant(60).active = true
         
         termsView.centerXAnchor.constraintEqualToAnchor(view.centerXAnchor).active = true
         termsView.topAnchor.constraintEqualToAnchor(adminButton.bottomAnchor, constant: 10).active = true
