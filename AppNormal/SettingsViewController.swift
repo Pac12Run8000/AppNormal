@@ -9,7 +9,15 @@
 import UIKit
 import Firebase
 
-class SettingsViewController: UIViewController {
+class SettingsViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+//    UIImagePickerControllerDelegate, UINavigationControllerDelegate
+    
+    var user: User? {
+        didSet {
+            
+        }
+    }
     
     let deletButton:UIButton = {
         let button = UIButton(type: UIButtonType.System)
@@ -52,7 +60,7 @@ class SettingsViewController: UIViewController {
     }()
     
     
-    let profileImageView:UIImageView = {
+    lazy var profileImageView:UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(named: "default")
@@ -60,17 +68,98 @@ class SettingsViewController: UIViewController {
         imageView.layer.borderWidth = 2
         imageView.layer.masksToBounds = true
         imageView.layer.cornerRadius = 50
+        imageView.userInteractionEnabled = true
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleUpdateProfile)))
         return imageView
     }()
     
+    
+    func handleUpdateProfile() {
+        
+        let picker = UIImagePickerController()
+        
+        picker.delegate = self
+        picker.allowsEditing = true
+        
+        presentViewController(picker, animated: true, completion: nil)
+
+    }
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        var selectedImageFromPicker:UIImage?
+        
+        if let editedImage = info["UIImagePickerControllerEditedImage"] as? UIImage {
+            selectedImageFromPicker = editedImage
+        
+        } else if let originalImage = info["UIImagePickerControllerOriginalImage"] as? UIImage {
+            selectedImageFromPicker = originalImage
+        }
+        if let selectedImage = selectedImageFromPicker {
+            profileImageView.image = selectedImage
+        }
+        uploadImageToStorage()
+        
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    private func uploadImageToStorage() {
+        
+        guard let name = user?.name, email = user?.email, uId = user?.id else {
+            return
+        }
+        
+        let imageName = NSUUID().UUIDString
+        let storageRef = FIRStorage.storage().reference().child("profile_images").child("\(imageName).jpg")
+        
+        if let pImage = self.profileImageView.image, uploadData = UIImageJPEGRepresentation(pImage, 0.1) {
+            storageRef.putData(uploadData, metadata: nil, completion: { (metaData, error) in
+                if (error != nil) {
+                    print("UploadImage error:", error)
+                    return
+                }
+                if let profileImageUrl = metaData?.downloadURL()?.absoluteString {
+                    let properties = ["name": name, "email": email, "id": uId, "profileImageUrl": profileImageUrl]
+                    
+                    self.registerIntoDatabase(properties)
+                }
+            })
+        }
+        
+    }
+    
+    func registerIntoDatabase(properties: [String:AnyObject]) {
+//        print("profileImageUrl:",properties["profileImageUrl"], "name:", properties["name"], "uId:", properties["id"])
+        
+        guard let uId = properties["id"] as? String else {
+            return
+        }
+        
+        let ref = FIRDatabase.database().reference()
+        let userRef = ref.child("users").child(uId)
+        userRef.updateChildValues(properties) { (error, reference) in
+            if (error != nil) {
+                print(error)
+                return
+            }
+            print("Image saved successfully")
+        }
+    }
+
+    
+    
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        fetchUser()
+        
         
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        fetchUser()
         navigationController?.navigationBar.barTintColor = ChatMessageCell.orangeishColor
         view.backgroundColor = ChatMessageCell.browishColor
         
@@ -82,21 +171,20 @@ class SettingsViewController: UIViewController {
     func fetchUser() {
        
         if let uId = FIRAuth.auth()?.currentUser?.uid {
-       
-        
+            
         let ref = FIRDatabase.database().reference().child("users").child(uId)
         ref.observeSingleEventOfType(.Value, withBlock: { (snapshot) in
             if let dictionary = snapshot.value as? [String:AnyObject] {
-                let user = User()
+                let myUser = User()
                 
-                user.id = snapshot.key
-                user.setValuesForKeysWithDictionary(dictionary)
-                
-                if let profileImageUrl = user.profileImageUrl {
+                myUser.id = snapshot.key
+                myUser.setValuesForKeysWithDictionary(dictionary)
+                self.user = myUser
+                if let profileImageUrl = myUser.profileImageUrl {
                     self.profileImageView.loadImageUsingCacheWithUrlString(profileImageUrl)
                 }
                 
-                self.userNameLabel.text = user.name
+                self.userNameLabel.text = myUser.name
                 
             }
             }, withCancelBlock: nil)
