@@ -11,11 +11,11 @@ import Firebase
 
 class SettingsViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-//    UIImagePickerControllerDelegate, UINavigationControllerDelegate
+
     
     var user: User? {
         didSet {
-            
+            self.userNameLabel.text = user!.name
         }
     }
     
@@ -34,7 +34,7 @@ class SettingsViewController: UIViewController, UIImagePickerControllerDelegate,
     }()
    
     
-    let userNameLabel:PaddingLabel = {
+    lazy var userNameLabel:PaddingLabel = {
         let label = PaddingLabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = ChatMessageCell.orangeishColor
@@ -43,7 +43,8 @@ class SettingsViewController: UIViewController, UIImagePickerControllerDelegate,
         label.layer.borderColor = UIColor.whiteColor().CGColor
         label.layer.borderWidth = 2
         label.textAlignment = .Center
-        
+        label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(editUserName)))
+        label.userInteractionEnabled = true
         return label
     }()
     
@@ -72,6 +73,14 @@ class SettingsViewController: UIViewController, UIImagePickerControllerDelegate,
         imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleUpdateProfile)))
         return imageView
     }()
+    
+    func editUserName() {
+        let editUserController = EditUserNameViewController()
+        editUserController.settingsController = self
+        editUserController.user = user
+        let navigationController = UINavigationController(rootViewController: editUserController)
+        presentViewController(navigationController, animated: true, completion: nil)
+    }
     
     
     func handleUpdateProfile() {
@@ -183,7 +192,6 @@ class SettingsViewController: UIViewController, UIImagePickerControllerDelegate,
                 if let profileImageUrl = myUser.profileImageUrl {
                     self.profileImageView.loadImageUsingCacheWithUrlString(profileImageUrl)
                 }
-                
                 self.userNameLabel.text = myUser.name
                 
             }
