@@ -19,7 +19,9 @@ class SettingsViewController: UIViewController, UIImagePickerControllerDelegate,
         }
     }
     
-    let deletButton:UIButton = {
+    
+    
+    lazy var deletButton:UIButton = {
         let button = UIButton(type: UIButtonType.System)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Delete Account", forState: UIControlState.Normal)
@@ -29,7 +31,7 @@ class SettingsViewController: UIViewController, UIImagePickerControllerDelegate,
         button.tintColor = UIColor.blackColor()
         button.layer.borderColor = ChatMessageCell.orangeishColor.CGColor
         button.layer.borderWidth = 3
-        button
+        button.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDeleteUser)))
         return button
     }()
    
@@ -54,7 +56,7 @@ class SettingsViewController: UIViewController, UIImagePickerControllerDelegate,
         label.backgroundColor = ChatMessageCell.redishColor
         label.layer.cornerRadius = 5
         label.layer.masksToBounds = true
-        label.text = "click on the profileImage\n or username to edit"
+        label.text = "click on the profileImage\n or username to edit\nLogout and log back in to see changes."
         label.textAlignment = .Center
         label.numberOfLines = 4
         return label
@@ -80,6 +82,138 @@ class SettingsViewController: UIViewController, UIImagePickerControllerDelegate,
         editUserController.user = user
         let navigationController = UINavigationController(rootViewController: editUserController)
         presentViewController(navigationController, animated: true, completion: nil)
+    }
+    
+    
+    
+    
+    
+    
+    func handleDeleteUser() {
+
+        let actionSheet: UIAlertController = UIAlertController(title: "Delete Account", message: "This will be a permanant action. Are you sure you want to do this?", preferredStyle: UIAlertControllerStyle.ActionSheet)
+        
+        let deleteAlertAction:UIAlertAction = UIAlertAction(title: "Delete", style: .Destructive) { (alertAction:UIAlertAction) in
+
+            guard let uId = FIRAuth.auth()?.currentUser?.uid else {
+                return
+            }
+            
+            //            Mark:Get all posts from the feed
+            let ref = FIRDatabase.database().reference().child("feed")
+            ref.observeEventType(.ChildAdded, withBlock: { (snapshot) in
+                if let dictionary = snapshot.value as? [String:AnyObject] {
+                    if (uId == dictionary["fromId"] as? String) {
+                        
+                        let postId = snapshot.key
+                        let post = Post(dictionary: dictionary)
+                        post.postId = postId
+                            self.removePost(postId)
+                    }
+                    
+                }
+                }, withCancelBlock: nil)
+
+            
+//            Mark: Get all Flags
+            let flagRef = FIRDatabase.database().reference().child("flags")
+            flagRef.observeEventType(.ChildAdded, withBlock: { (snapshot) in
+                if let dictionary = snapshot.value as? [String:AnyObject] {
+                    if (uId == dictionary["flaggedUserId"] as? String || uId == dictionary["uId"] as? String) {
+                        let flagId = snapshot.key
+                        let flag = Flag(dictionary: dictionary)
+                        flag.flagId = flagId
+                        self.removeFlags(flag)
+                    }
+                }
+                }, withCancelBlock: nil)
+            
+//            Mark: Get and delete all users
+            let userRef = FIRDatabase.database().reference().child("users").child(uId)
+            userRef.removeValueWithCompletionBlock({ (error, uRef) in
+                if (error != nil) {
+                    print(error)
+                    return
+                }
+                print("User Deleted")
+            })
+            
+//            Mark: Get all likes
+            let likeRef = FIRDatabase.database().reference().child("likes")
+            likeRef.observeEventType(.ChildAdded, withBlock: { (snapshot) in
+                if let dictionary = snapshot.value as? [String: AnyObject] {
+                    if (uId == dictionary["uId"] as? String) {
+                        let likeId = snapshot.key
+                        let like = Like(dictionary: dictionary)
+                        like.likeId = likeId
+                        self.removeLike(likeId)
+                    }
+                }
+                }, withCancelBlock: nil)
+            
+            
+
+            
+//          Mark: sign out of app
+            do {
+                try FIRAuth.auth()?.signOut()
+            } catch let logoutErr {
+                print(logoutErr)
+            }
+            
+            let customController = CustomTabBarController()
+            self.presentViewController(customController, animated: true, completion: nil)
+
+        }
+        let cancelAction:UIAlertAction = UIAlertAction(title: "Cancel", style: .Cancel) { (alertAction:UIAlertAction) in
+            print("Deletion Cancelled")
+        }
+        actionSheet.addAction(deleteAlertAction)
+        actionSheet.addAction(cancelAction)
+        
+        self.presentViewController(actionSheet, animated: true, completion: nil)
+    }
+    
+    
+    
+    
+    
+    
+    private func removeFlags(flag: Flag) {
+//        print("FlagId:", flag.flagId)
+        if let myFlagId = flag.flagId {
+            let deletFlagRef = FIRDatabase.database().reference().child("flags").child(myFlagId)
+            deletFlagRef.removeValueWithCompletionBlock({ (error, ref) in
+                if (error != nil) {
+                    print(error)
+                    return
+                }
+//                print("Flag removed")
+            })
+        }
+    }
+    
+    private func removeLike(likeId: String) {
+        let removeLikeRef = FIRDatabase.database().reference().child("likes").child(likeId)
+        removeLikeRef.removeValueWithCompletionBlock { (error, ref) in
+            if (error != nil) {
+                print(error)
+                return
+            }
+//            print("like removed!!!")
+        }
+    }
+    
+    
+    private func removePost(postId: String) {
+        let refRemove = FIRDatabase.database().reference().child("feed").child(postId)
+        refRemove.removeValueWithCompletionBlock { (err, ref) in
+            if (err != nil) {
+                print("err:", err)
+                return
+            }
+            print("post removed!!")
+        }
     }
     
     
@@ -131,21 +265,19 @@ class SettingsViewController: UIViewController, UIImagePickerControllerDelegate,
                     return
                 }
                 if let profileImageUrl = metaData?.downloadURL()?.absoluteString {
-                    let properties = ["name": name, "email": email, "id": uId, "profileImageUrl": profileImageUrl]
+                    let properties = ["name": name, "email": email, "profileImageUrl": profileImageUrl]
                     
-                    self.registerIntoDatabase(properties)
+                    self.registerIntoDatabase(properties, uId: uId)
                 }
             })
         }
         
     }
     
-    func registerIntoDatabase(properties: [String:AnyObject]) {
+    func registerIntoDatabase(properties: [String:AnyObject], uId:String) {
 //        print("profileImageUrl:",properties["profileImageUrl"], "name:", properties["name"], "uId:", properties["id"])
         
-        guard let uId = properties["id"] as? String else {
-            return
-        }
+       
         
         let ref = FIRDatabase.database().reference()
         let userRef = ref.child("users").child(uId)
