@@ -20,3 +20,7 @@ Written in Xcode 7, this application was created using firebase, cocopods, swift
 <img src="https://user-images.githubusercontent.com/12214205/33812234-71385064-ddd0-11e7-910d-3055df0e4c78.jpg" height="250">
 5. From the terms of service controller you can see rules and constraints of service as well as the ability to report or flag content that violates the terms of service or code of conduct. BTW the "Admin" button is only seen by those with admin priveledges.
 <img src="https://user-images.githubusercontent.com/12214205/33812367-c4870dae-ddd1-11e7-81f1-53fba4bfa62d.jpg" height="250">
+
+License
+------
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
