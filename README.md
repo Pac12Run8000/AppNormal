@@ -16,6 +16,6 @@ Written in Xcode 7, this application was created using firebase, cocopods, swift
 3. After you get to the main view with the TabBar controller, you will have the Tabbar option (at the botton of the view) that allow you to either "message" another user, view the "feed" or see the "terms and conditions". In order to "message" a user, click on a cell in the appropriate tableView controller and a message window will open up. You can message other users with text or images.
 <img src="https://user-images.githubusercontent.com/12214205/33811682-0ff93f5c-ddcb-11e7-8e78-dd9582660242.jpg" height="250">
 4. the feed tab allows you to see other people's posts. You can then "like" and comment on other peoples posts.
-<img src="https://user-images.githubusercontent.com/12214205/33811682-0ff93f5c-ddcb-11e7-8e78-dd9582660242.jpg" height="250">
+<img src="https://user-images.githubusercontent.com/12214205/33812194-244d5844-ddd0-11e7-863f-07322ce9cca6.jpg" height="250">
 5. Then there are terms of service.
 <img src="https://user-images.githubusercontent.com/12214205/33811682-0ff93f5c-ddcb-11e7-8e78-dd9582660242.jpg" height="250">
