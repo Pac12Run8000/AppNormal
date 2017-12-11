@@ -1,4 +1,14 @@
 # AppNormal
+Licensing information: Read License
+
+Author and Contributors List
+------
+Norbert Grover
+
+All discovered bugs can be forewarded to sosagrover1987@gmail.com
+
+How to use AppNormal
+======
 Written in Xcode 7, this application was created using firebase, cocopods, swift and Xcode. It is a para-normal social networking app that allows users to share content and experiences with the entire audience of users or users can message each other directly.
 ### directions:
 1. Create a new login or login. 
