@@ -19,4 +19,4 @@ Written in Xcode 7, this application was created using firebase, cocopods, swift
 <img src="https://user-images.githubusercontent.com/12214205/33812194-244d5844-ddd0-11e7-863f-07322ce9cca6.jpg" height="250">
 <img src="https://user-images.githubusercontent.com/12214205/33812234-71385064-ddd0-11e7-910d-3055df0e4c78.jpg" height="250">
 5. From the terms of service controller you can see rules and constraints of service as well as the ability to report or flag content that violates the terms of service or code of conduct.
-<img src="https://user-images.githubusercontent.com/12214205/33811682-0ff93f5c-ddcb-11e7-8e78-dd9582660242.jpg" height="250">
+<img src="https://user-images.githubusercontent.com/12214205/33812367-c4870dae-ddd1-11e7-81f1-53fba4bfa62d.jpg" height="250">
